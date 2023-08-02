@@ -67,7 +67,7 @@ if (windowAspectRatio > gameAspectRatio) {
 
 new Phaser.Game({
   type: Phaser.WEBGL,
-  parent: 'game-container',  // changed from 'game' to 'game-container'
+  parent: 'game',
   width: gameWidth,  // adjusted width
   height: gameHeight,  // adjusted height
   scene: { preload, create },
