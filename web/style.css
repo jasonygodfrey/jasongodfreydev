@@ -1,0 +1,21 @@
+* {
+    box-sizing: border-box;
+  }
+  
+  html, body {
+    margin: 0;
+    min-height: 100vh;
+    
+    
+
+    
+    touch-action: none;
+  }
+  
+canvas {
+    position: absolute; /* Set the position to absolute or relative for z-index to work */
+    z-index: 0; /* Lower z-index */
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+}
