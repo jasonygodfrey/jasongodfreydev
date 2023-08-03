@@ -1,0 +1,29 @@
+{
+  "section1": {
+      "files": [
+
+          {
+            "url": "assets/enemy1.png",
+            "key": "enemy1",
+            "type": "image"
+        },
+
+          {
+            "url": "assets/ui1spritesheet.png",
+            "key": "ui1",
+            "type": "spritesheet",
+            "frameConfig": {
+                "frameWidth": 224,
+                "frameHeight": 101
+            }
+        }
+        
+      ]
+  },
+  "meta": {
+      "app": "Phaser Editor 2D - Asset Pack Editor",
+      "contentType": "phasereditor2d.pack.core.AssetContentType",
+      "url": "https://phasereditor2d.com",
+      "version": 2
+  }
+}
