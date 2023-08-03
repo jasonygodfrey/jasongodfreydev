@@ -3,10 +3,10 @@ document.addEventListener('DOMContentLoaded', (event) => {
   const currentPathname = window.location.pathname;
 
   navLinks.forEach((link) => {
-      const href = link.getAttribute('href');
-      if (href === currentPathname || href + '/' === currentPathname) {
-          link.classList.add('active-link');
-      }
+    const href = link.getAttribute('href');
+    if (href === currentPathname || href + '/' === currentPathname) {
+      link.classList.add('active-link');
+    }
   });
 });
 
@@ -14,13 +14,23 @@ const { GetRandom } = Phaser.Utils.Array;
 
 function preload() {
   this.load.crossOrigin = "anonymous";
- // this.load.setBaseURL("https://labs.phaser.io");
+  // this.load.setBaseURL("https://labs.phaser.io");
   this.load.image("space", "assets/space.jpg");
   this.load.image("spark", "assets/blue.png");
+  this.load.image("startGame", "assets/startgame.png");
   this.load.spritesheet('uiSprite', 'assets/ui1spritesheet.png', { frameWidth: 224, frameHeight: 101 });
 }
 
+
+
+//create()
 function create() {
+   // Get 10% of game height
+   let topCropHeight = this.game.config.height * 0.10;
+   let bottomCropHeight = this.game.config.height * 0.90;
+ 
+   // Set the camera viewport to be cropped
+   this.cameras.main.setViewport(0, topCropHeight, this.game.config.width, bottomCropHeight - topCropHeight);
   this.cameras.main.centerOn(0, 0);
 
   const emitCircle = new Phaser.Geom.Circle(0, 0, 350);
@@ -47,18 +57,26 @@ function create() {
   const { gameWidth, gameHeight } = this.game.config;
 
   let startGameText = this.add.text(gameWidth, 0, 'Start Game', { fontSize: '32px', fill: '#C71585' }).setOrigin(0.5, 4);
-  const sprite = this.add.sprite(0, 0, 'uiSprite').setOrigin(0.5, 0.5).setDepth(1000);
+  let startGameImage = this.add.image(gameWidth, 0, 'startGame').setOrigin(1.68, 1.05).setScale(0.19);
+
+
+
+  const sprite = this.add.sprite(0, 0, 'uiSprite').setOrigin(1.2, 0.9).setScale(2.5).setDepth(1000);
 
   this.anims.create({
     key: 'uiAnimate',
     frames: this.anims.generateFrameNumbers('uiSprite', { start: 0, end: 124 })
-,
-    frameRate: 10,
+    ,
+    frameRate: 20,
     repeat: -1
   });
 
   sprite.anims.play('uiAnimate');
+
+  
 }
+
+///end create
 
 const windowAspectRatio = window.innerWidth / window.innerHeight;
 const gameAspectRatio = 3 / 2;
@@ -73,14 +91,14 @@ if (windowAspectRatio > gameAspectRatio) {
   gameHeight = gameWidth / gameAspectRatio;
 }
 
-new Phaser.Game({
+const game = new Phaser.Game({
   type: Phaser.WEBGL,
   parent: 'game-container',
-  width: gameWidth,
-  height: gameHeight,
+  width: window.innerWidth,
+  height: window.innerHeight,
   scene: { preload, create },
   audio: { noAudio: true },
-  input: { mouse: false, touch: false, keyboard: false },
-  gameWidth,
-  gameHeight
+  input: { mouse: false, touch: false, keyboard: false }
 });
+
+
