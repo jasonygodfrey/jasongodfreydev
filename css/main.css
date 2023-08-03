@@ -93,9 +93,13 @@ header {
   display: flex;
   justify-content: center;
   padding: 10px 30px;
-  background-color: rgba(235, 0, 0, 0.205);
+  background-image: url('../japanesemanga.png'); /* Replace with the correct path to your image if it's different */
+  background-size: cover; /* This scales the image to cover the entire header */
+  background-repeat: no-repeat; /* This prevents the image from repeating */
+  background-position: center; /* This centers the image in the header */
   z-index: 1000; /* This makes sure the header is always on top of other elements */
 }
+
 
 
 nav ul.nav-links {
@@ -108,6 +112,9 @@ nav ul.nav-links a {
   text-decoration: none;
   color: white;
   transition: color 0.3s ease;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); /* Horizontal offset, Vertical offset, Blur radius, and color */
+
+  
 }
 
 nav ul.nav-links a:hover {
