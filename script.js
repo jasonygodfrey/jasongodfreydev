@@ -15,13 +15,13 @@ const { GetRandom } = Phaser.Utils.Array;
 function preload() {
   this.load.crossOrigin = "anonymous";
   // this.load.setBaseURL("https://labs.phaser.io");
-  this.load.image("space", "assets/space.jpg");
+  this.load.image("space", "assets/dragon.png");
   this.load.image("spark", "assets/blue.png");
   this.load.image("startGame", "assets/startgame.png");
   this.load.spritesheet('uiSprite', 'assets/ui1spritesheet.png', { frameWidth: 224, frameHeight: 101 });
 }
 
-
+let emitter;
 
 //create()
 function create() {
@@ -41,7 +41,7 @@ function create() {
 
   this.add.image(0, 0, "space");
 
-  this.add.particles("spark").createEmitter({
+  emitter = this.add.particles("spark").createEmitter({
     alpha: { start: 0, end: 0.2, ease: "Cubic.easeInOut" },
     blendMode: "ADD",
     emitCallback: () => { moveToPoint = GetRandom(moveToPoints); },
@@ -56,8 +56,22 @@ function create() {
 
   const { gameWidth, gameHeight } = this.game.config;
 
-  let startGameText = this.add.text(gameWidth, 0, 'Start Game', { fontSize: '32px', fill: '#C71585' }).setOrigin(0.5, 4);
   let startGameImage = this.add.image(gameWidth, 0, 'startGame').setOrigin(1.68, 1.05).setScale(0.19);
+  startGameImage.setInteractive();
+  
+  // Flash the image once when it is clicked
+  startGameImage.on('pointerdown', () => {
+      this.tweens.add({
+          targets: startGameImage,
+          alpha: 0,
+          duration: 100,
+          ease: 'Power2',
+          yoyo: true
+      });
+      // Double the number of particles
+      emitter.setQuantity(20);
+    });
+  
 
 
 
@@ -72,7 +86,17 @@ function create() {
   });
 
   sprite.anims.play('uiAnimate');
+// First, get the bottom Y coordinate of the image
+let textStartY = startGameImage.y + startGameImage.displayHeight / 2;
 
+// Then add the text
+let style = { font: "32px Arial", fill: "#ffffff", };
+let text1 = this.add.text(startGameImage.x, textStartY, 'BOBA 2042', style);
+text1.setOrigin(3, 1.05); // This will center align the text horizontally and align it to the top vertically
+let text2 = this.add.text(startGameImage.x, textStartY, 'NO HXPE', style);
+text2.setOrigin(3.4, -0.05);
+let text3 = this.add.text(startGameImage.x, textStartY, 'CODE SHIT', style);
+text3.setOrigin(2.9, -1.15);
   
 }
 
@@ -98,7 +122,6 @@ const game = new Phaser.Game({
   height: window.innerHeight,
   scene: { preload, create },
   audio: { noAudio: true },
-  input: { mouse: false, touch: false, keyboard: false }
+  input: { mouse: true, touch: true, keyboard: true }
 });
-
 
