@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Old English Gothic Pixel';
+  src: url('gothgaming.otf') format('opentype');
+  font-style: normal;
+  font-weight: 400;
+}
+
+
 body {
   background-color: black;
   color: white;
@@ -9,6 +17,8 @@ body {
   padding: 0;
   color: #eee;
   font: caption;
+  overflow-x: hidden;
+
 }
 
 /* ===== Scrollbar CSS ===== */
@@ -98,6 +108,8 @@ header {
   background-repeat: no-repeat; /* This prevents the image from repeating */
   background-position: center; /* This centers the image in the header */
   z-index: 1000; /* This makes sure the header is always on top of other elements */
+
+
 }
 
 
@@ -118,7 +130,7 @@ nav ul.nav-links a {
 }
 
 nav ul.nav-links a:hover {
-  color: #15fc00;
+  color: #ff810b;
 }
 
 nav ul.nav-links a.active-link {
@@ -188,3 +200,60 @@ nav ul.nav-links a.active-link {
   align-items: center;
   height: 140vh; /* This ensures the container covers the full viewport height */
 }
+
+#name-container {
+  position: absolute;
+  width: 100%;
+  top: 5px;
+  left: 50%;
+  text-align: center;
+  z-index: 999;
+  pointer-events: none;
+  transform: translate(-50%, 0); /* Updated the transform here */
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(5px);
+  }
+}
+
+#name-container h1 {
+  color: rgba(255, 0, 34, 0.573);
+  font-family: 'Old English Gothic Pixel';
+  font-size: 5.2em;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  overflow: hidden; /* Keeps overflow hidden */
+  animation: float 4s ease-in-out infinite;
+  text-shadow: 1px 1px #ff000000, 
+               2px 2px #710000, 
+               3px 3px #290000;
+  max-width: 100%; /* Ensures it doesn't exceed the container's width */
+}
+#icons-container {
+  position: relative; /* Set the position to relative */
+  top: -130px; /* Adjust this value to move the container up */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  
+  padding: 20px 0; 
+}
+
+#icons-container img {
+  width: 100%; 
+  height: auto; 
+  animation: scroll 30s linear infinite; /* Add the scrolling animation */
+}
+
+/* Define the scroll animation */
+@keyframes scroll {
+  0% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
