@@ -1,3 +1,6 @@
+
+
+
 @font-face {
   font-family: 'Old English Gothic Pixel';
   src: url('gothgaming.otf') format('opentype');
@@ -107,7 +110,7 @@ header {
   background-size: cover; /* This scales the image to cover the entire header */
   background-repeat: no-repeat; /* This prevents the image from repeating */
   background-position: center; /* This centers the image in the header */
-  z-index: 1000; /* This makes sure the header is always on top of other elements */
+  z-index: 2000; /* This makes sure the header is always on top of other elements */
 
 
 }
@@ -142,7 +145,7 @@ nav ul.nav-links a.active-link {
   top: 0;
   left: 0;
   width: 50%;
-  height: 100%;
+  height: 0%;
   z-index: 1; /* This will put the game behind your other content */
   
 }
@@ -159,6 +162,7 @@ nav ul.nav-links a.active-link {
   line-height: 1.6;  /* Set line height */
   border-radius: 10px;  /* Optional: rounds the corners of the background */
   animation: fadeIn 2s;  /* Fade in animation */
+  
 }
 
 
@@ -192,25 +196,30 @@ nav ul.nav-links a.active-link {
   display: block;
   width: 100%;
   text-align: center; /* Center the icon */
+
+  
 }
 #content-container {
   display: flex;
   flex-direction: column;
   justify-content: space-between; /* This separates the game and about sections */
   align-items: center;
-  height: 140vh; /* This ensures the container covers the full viewport height */
+  z-index: 1;
+  height: -240vh; /* This ensures the container covers the full viewport height */
 }
 
 #name-container {
   position: absolute;
-  width: 100%;
-  top: 5px;
+  width: px; /* Adjust the width as needed */
+  top: 10px; /* Adjust the top value to fine-tune the vertical position */
   left: 50%;
-  text-align: center;
   z-index: 999;
   pointer-events: none;
-  transform: translate(-50%, 0); /* Updated the transform here */
+  transform: translate(-50%, 0);
 }
+
+/* ... Your other styles ... */
+
 
 @keyframes float {
   0%, 100% {
@@ -223,7 +232,8 @@ nav ul.nav-links a.active-link {
 
 #name-container h1 {
   color: rgba(255, 0, 34, 0.573);
-  font-family: 'Old English Gothic Pixel';
+  font-family: Consolas, monospace;
+
   font-size: 5.2em;
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
   white-space: nowrap;
@@ -236,7 +246,7 @@ nav ul.nav-links a.active-link {
 }
 #icons-container {
   position: relative; /* Set the position to relative */
-  top: -130px; /* Adjust this value to move the container up */
+  top: 0px; /* Adjust this value to move the container up */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -246,7 +256,7 @@ nav ul.nav-links a.active-link {
 }
 
 #icons-container img {
-  width: 100%; 
+  width: 33%; 
   height: auto; 
   animation: scroll 30s linear infinite; /* Add the scrolling animation */
 }
@@ -256,4 +266,264 @@ nav ul.nav-links a.active-link {
   0% { transform: translateX(100%); }
   100% { transform: translateX(-100%); }
 }
+/* Footer styles */
+footer#jasonfooter {
+  position: relative;
+  bottom: 0;
+  left: 0;
+  top: 0%;
+  width: 100%;
+  height: 120px; /* Adjust the height as needed */
+  background: url('jasonfooter.png'); /* Add your image as a background */
+  background-size: cover; /* Cover the entire area of the footer */
+  background-repeat: no-repeat; /* Prevent the image from repeating */
+  background-position: center; /* Center the background image */
+  z-index: 1000; /* Ensure the footer is on top of other content */
+}
 
+.footer-content {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.footer-content p {
+  color: rgba(225, 88, 88, 0.578);
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+}
+
+
+
+
+@import url('https://fonts.googleapis.com/css?family=Audiowide');
+
+body {
+
+    -webkit-animation: bugfix infinite 1s;
+}
+
+@-webkit-keyframes bugfix {
+    from {
+        padding: 0;
+    }
+    to {
+        padding: 0;
+    }
+}
+
+.wrap {
+    display: block;
+    max-width: 1024px;
+    margin: 0 auto 2em;
+    padding: 0 1em;
+    width: 100%;
+}
+
+@media(min-width: 43.75em) {
+    .wrap {
+        padding: 3em;
+    }
+}
+
+p {
+    color: #555;
+    text-shadow: 1px 1px 1px #fff;
+}
+
+a, a:visited {
+    color: #0B6964;
+    text-decoration: none;
+}
+
+.question-section {
+   
+    
+    display: inline-block;
+    font-size: 1rem;
+    margin-bottom: 1em;
+    padding: 1em;
+    position: relative;
+    vertical-align: top;
+    width: 100%;
+}
+
+@media(min-width: 50em) {
+    .question-section {
+        font-size: .75rem;
+        padding: 1em 1.5em;
+    }
+}
+
+@media(min-width: 62.5em) {
+    .question-section {
+        font-size: 1rem;
+    }
+}
+
+.question-section h {
+    font-family: "Audiowide", cursive;
+    color: #085078;
+    font-size: 5.5vw;
+    font-weight: 700;
+    margin-bottom: .25em;
+}
+
+@media(min-width: 32.25em) {
+    .question-section h {
+        font-size: 4.9vw;
+    }
+}
+
+@media(min-width: 67.5em) {
+    .question-section h {
+        font-size: 3.25em;
+    }
+}
+
+.question-section > p,
+.question-section > h1 {
+    text-align: center;
+}
+
+.question-section > p {
+    font-size: 2.8vw;
+    margin-bottom: 1em;
+}
+
+@media(min-width: 22.1875em) {
+    .question-section > p {
+        font-size: 0.667em;
+    }
+}
+
+@media(min-width: 31.25em) {
+    .question-section > p {
+        font-size: 1em;
+    }
+}
+
+@media(min-width: 81.25em) {
+    .question-section > p {
+        font-size: 1.15em;
+    }
+}
+
+div[class^="cat"] {
+    width: 100%;
+}
+
+div[class^="cat"] > label {
+    background: #69160b;
+    color: #fff;
+    cursor: pointer;
+    display: block;
+    font-weight: bold;
+    line-height: 1.4;
+    margin-bottom: 0.5em;
+    padding: 0.75em 0.5em;
+    transition: all 0.55s;
+}
+
+div[class^="cat"] > label:hover {
+    background: #e80000;
+}
+
+@media(min-width: 50em) {
+    div[class^="cat"] > label {
+        font-size: 1.25em;
+    }
+}
+
+div[class^="cat"] > input {
+    position: absolute;
+    z-index: -999;
+}
+
+div[class^="cat"] > input:focus + label {
+    background: #c70000;
+    letter-spacing: 1px;
+}
+
+div[class^="cat"] .question-wrap {
+    height: 100%;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all .75s cubic-bezier(0.19, 1, 0.22, 1);
+    width: 100%;
+}
+
+div[class^="cat"] > input:checked ~ .question-wrap {
+    max-height: 1000px;
+    opacity: 1;
+    transition: all 1.95s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.question-wrap .question {
+    margin: 1em 0;
+}
+
+.question-wrap label {
+    color: #093E5A;
+    cursor: pointer;
+    display: block;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+@media(min-width: 50em) {
+    .question-wrap label {
+        font-size: 1.25em;
+    }
+}
+
+.question-wrap input {
+    position: absolute;
+    z-index: -999;
+    top: -10000px;
+}
+
+.question-wrap input:focus + label {
+    color: #043C42;
+}
+
+.question-wrap input:not(:checked) ~ p {
+    height: 100%;
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all .75s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.question-wrap input:checked ~ p {
+    max-height: 500px;
+    opacity: 1;
+    transition: all 1.95s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+input:focus {
+    border: 3px solid red;
+    outline: 3px solid red;
+    background: red;
+}
+
+a:focus {
+    color: #085078;
+    font-weight: bold;
+    outline: none;
+}
+
+
+.contact {
+  font-size: 84px;
+  color: red;
+  text-align: center;
+  margin-top: -189px;
+}
