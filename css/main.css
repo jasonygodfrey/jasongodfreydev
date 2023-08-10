@@ -522,8 +522,20 @@ a:focus {
 
 
 .contact {
+  display: flex;
+  justify-content: space-between; /* push children to the edges */
   font-size: 84px;
   color: red;
-  text-align: center;
   margin-top: -189px;
+}
+
+.contact-text {
+  width: 100%; /* give the text element full width */
+  text-align: center; /* center the text within its own space */
+}
+
+.arrow {
+  width: 100px; 
+  height: 100px; 
+  margin-top: 75px;
 }
