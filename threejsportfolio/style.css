@@ -1,0 +1,51 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* This will prevent scrollbars from appearing */
+    width: 100%;
+    height: 100%;
+  }
+  canvas {
+    display: block;
+  }
+
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center; /* Vertically centers the nav bar */
+    padding: 10px 0px;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    z-index: 2000;
+}
+
+  
+  
+  
+  nav ul.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 20px;
+  }
+  
+  nav ul.nav-links a {
+    text-decoration: none;
+    color: white;
+    transition: color 0.3s ease;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9); /* Horizontal offset, Vertical offset, Blur radius, and color */
+  
+    
+  }
+  
+  nav ul.nav-links a:hover {
+    color: #ff810b;
+  }
+  
+  nav ul.nav-links a.active-link {
+    color: #15fc00;  /* Change this to the color you want for the active link */
+  }
