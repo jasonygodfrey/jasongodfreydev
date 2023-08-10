@@ -106,14 +106,13 @@ function animate() {
     if (dragon) {
         // Calculate the angle between the dragon and the intersection point
         const targetAngle = Math.atan2(
-            intersection.y + dragon.position.y,
+            intersection.y - dragon.position.y,
             intersection.x - dragon.position.x
-        );
-        
+        ) - Math.PI/2; // Desired angle (facing the mouse)
 
         // Smoothly interpolate the dragon's current rotation towards the target angle
         const alpha = 0.05; // This determines the speed/smoothness of the rotation. Lower value means smoother.
-        dragon.rotation.y = THREE.MathUtils.lerp(dragon.rotation.y, targetAngle, alpha);
+        dragon.rotation.y = THREE.MathUtils.lerp(dragon.rotation.y, -targetAngle, alpha);
     }
     
     // Update each mixer in the mixers array
