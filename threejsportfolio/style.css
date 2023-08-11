@@ -1,3 +1,11 @@
+@font-face {
+  font-family: 'Cathedral';
+  src: url('Cathedral.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+
 body, html {
     margin: 0;
     padding: 0;
@@ -174,3 +182,7 @@ body, html {
       opacity: 1;
   }
 }
+body, button, a {
+  font-family: 'Cathedral', sans-serif; /* Use Cathedral font and fallback to sans-serif if Cathedral doesn't load */
+}
+
