@@ -16,6 +16,8 @@ let angle = 0; // Initial angle
 let radius = 20; // Define the radius of the circular path
 let whiteSquare;
 let circleTexture = new THREE.TextureLoader().load("circle.png");
+const purpledragonTexture = new THREE.TextureLoader().load("textures/Dragon_Nor.jpg");
+
 
 function onMouseMove(event) {
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
@@ -26,7 +28,7 @@ function addText() {
   const fontLoader = new FontLoader();
 
   fontLoader.load(
-    "https://threejs.org/examples/fonts/helvetiker_regular.typeface.json",
+    "Cruiser Fortress Engraved Italic_Italic.json",
     function (font) {
       // Main title
       const geometryMain = new TextGeometry("Jason Godfrey", {
@@ -43,7 +45,7 @@ function addText() {
 
       const materialMain = new MeshBasicMaterial({ color: 0xffffff });
       const textMeshMain = new Mesh(geometryMain, materialMain);
-      textMeshMain.position.set(-22, 30, 0); // Adjusted y position slightly
+      textMeshMain.position.set(-45, 30, 0); // Adjusted y position slightly
       scene.add(textMeshMain);
 
       // Subtitle
@@ -51,17 +53,12 @@ function addText() {
         font: font,
         size: 2, // Made this a bit smaller than the main title
         height: 0.5, // Adjusted thickness for subtext
-        curveSegments: 12,
-        bevelEnabled: false,
-        bevelThickness: 0.5,
-        bevelSize: 0.3,
-        bevelOffset: 0,
-        bevelSegments: 5,
+
       });
 
       const materialSub = new MeshBasicMaterial({ color: 0xffffff });
       const textMeshSub = new Mesh(geometrySub, materialSub);
-      textMeshSub.position.set(-12, 26, 0); // Positioned below main title
+      textMeshSub.position.set(-24, 26, 0); // Positioned below main title
       scene.add(textMeshSub);
     }
   );
@@ -119,6 +116,9 @@ function init() {
       }
     });
 
+
+
+    
     // Find and play the 'idle Pose' animation
     const targetAnimationName = "idle Pose";
     let targetAnimationClip;
@@ -241,7 +241,12 @@ document.querySelectorAll(".custom-btn").forEach((button) => {
         gameInfoDiv.style.display = "none"; // Show the contact information
         WebInfoDiv.style.display = "block"; // Show the contact information
         AboutMeInfoDiv.style.display = "none"; // Show the contact information
-
+        dragon.traverse((child) => {
+            if (child.isMesh) {
+              child.material.map = purpledragonTexture; // Apply the texture
+              child.material.needsUpdate = true; // Necessary after changing a material's properties
+            }
+          });
         break;
       case "Contact":
         gameInfoDiv.style.display = "none"; // Show the contact information
