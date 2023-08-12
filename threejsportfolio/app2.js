@@ -7,8 +7,7 @@ import {
   Mesh,
 } from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.min.js";
 
-let scene, camera, renderer;
-let dragon;
+let scene, camera, renderer, dragon, ground; // Add 'ground' here
 let mixers = []; // Declare an array to hold all mixers
 let mouse = new THREE.Vector2();
 let raycaster = new THREE.Raycaster();
@@ -16,13 +15,48 @@ let angle = 0; // Initial angle
 let radius = 20; // Define the radius of the circular path
 let whiteSquare;
 let circleTexture = new THREE.TextureLoader().load("circle.png");
+
 const purpledragonTexture = new THREE.TextureLoader().load("textures/Dragon_Nor.jpg");
+const groundGeometry = new THREE.PlaneGeometry(200, 200);  // You can adjust the size as needed
+const groundMaterial = new THREE.MeshBasicMaterial({ 
+    color: 0xff0000, 
+    transparent: true, 
+    opacity: 0  // Start with an opacity of 0, so it's initially invisible
+});
+function fadeInGround() {
+    const duration = 1000; // Fade-in duration in milliseconds (1 second in this case)
+    const start = performance.now();
+
+    function animateFadeIn(now) {
+        const elapsed = now - start;
+        if (elapsed < duration) {
+            // Calculate the current opacity
+            ground.material.opacity = (elapsed / duration);
+            requestAnimationFrame(animateFadeIn);
+        } else {
+            ground.material.opacity = 1; // Ensure that the opacity is set to 1 at the end
+        }
+        ground.material.needsUpdate = true;
+    }
+
+    requestAnimationFrame(animateFadeIn);
+}
+
 
 
 function onMouseMove(event) {
+    if (event.touches) {
+        // Use the first touch
+        event.clientX = event.touches[0].clientX;
+        event.clientY = event.touches[0].clientY;
+      }
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 }
+// Place the event listeners here, after defining the onMouseMove function
+document.addEventListener("mousemove", onMouseMove, false);
+document.addEventListener("touchmove", onMouseMove, false);
+
 
 function addText() {
   const fontLoader = new FontLoader();
@@ -33,7 +67,7 @@ function addText() {
       // Main title
       const geometryMain = new TextGeometry("Jason Godfrey", {
         font: font,
-        size: 5,
+        size: 2,
         height: 1,
         curveSegments: 12,
         bevelEnabled: false,
@@ -45,20 +79,20 @@ function addText() {
 
       const materialMain = new MeshBasicMaterial({ color: 0xffffff });
       const textMeshMain = new Mesh(geometryMain, materialMain);
-      textMeshMain.position.set(-45, 30, 0); // Adjusted y position slightly
+      textMeshMain.position.set(-19, 30, 0); // Adjusted y position slightly
       scene.add(textMeshMain);
 
       // Subtitle
       const geometrySub = new TextGeometry("Software Engineer", {
         font: font,
-        size: 2, // Made this a bit smaller than the main title
+        size: 1.5, // Made this a bit smaller than the main title
         height: 0.5, // Adjusted thickness for subtext
 
       });
 
       const materialSub = new MeshBasicMaterial({ color: 0xffffff });
       const textMeshSub = new Mesh(geometrySub, materialSub);
-      textMeshSub.position.set(-24, 26, 0); // Positioned below main title
+      textMeshSub.position.set(-18, 26, 0); // Positioned below main title
       scene.add(textMeshSub);
     }
   );
@@ -76,10 +110,13 @@ function init() {
     1000
   );
   camera.position.z = 50; // or even further if needed
+  
 
   // Create a renderer
-  renderer = new THREE.WebGLRenderer({ antialias: true });
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });  // Added alpha: true
   renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.shadowMap.enabled = true; // <-- Add this line here
+
   document.body.appendChild(renderer.domElement);
 
   // Handle window resizing
@@ -98,6 +135,8 @@ function init() {
   scene.add(ambientLight);
   const pointLight = new THREE.PointLight(0xffffff, 1);
   pointLight.position.set(10, 10, 10);
+  pointLight.castShadow = true; // <-- Add this line here
+
   scene.add(pointLight);
 
   // Load the dragon.obj model
@@ -113,6 +152,8 @@ function init() {
     dragon.traverse((child) => {
       if (child.isMesh) {
         child.material.wireframe = true;
+        child.castShadow = true; // <-- Add this line here
+
       }
     });
 
@@ -147,6 +188,20 @@ function init() {
 
     animate(); // Call the animate loop
   });
+
+  ground = new THREE.Mesh(groundGeometry, groundMaterial);
+  groundMaterial.needsUpdate = true; // Add this line
+
+ground.rotation.x = -Math.PI / 2;  // Rotate the plane to be horizontal
+ground.visible = false;
+ground.position.set(0, -21, 0); // Adjust as per requirement
+
+ground.receiveShadow = true;  // Optional: Enable if you want the ground to receive shadows
+console.log(ground.material);
+        scene.add(ground); // Add the ground to the scene here
+
+
+
   addText();
 
   // ... rest of your code ...
@@ -207,23 +262,28 @@ document.querySelectorAll(".custom-btn").forEach((button) => {
     const contactInfoDiv = document.getElementById("contact-info");
     const gameInfoDiv = document.getElementById("GameDev-info");
     const WebInfoDiv = document.getElementById("WebDev-info");
-    const AboutMeInfoDiv = document.getElementById("AboutMe-info");
+    const AboutInfoDiv = document.getElementById("About-info");
 
 
     switch (event.target.innerText) {
-      case "AboutMe":
+      case "About":
         if (dragon) {
           dragon.traverse((child) => {
             if (child.isMesh) {
               child.material.wireframe = false; // Turn off wireframe
+              
             }
           });
         }
-
+        
         contactInfoDiv.style.display = "none"; // Show the contact information
         gameInfoDiv.style.display = "none"; // Show the contact information
         WebInfoDiv.style.display = "none"; // Show the contact information
-        AboutMeInfoDiv.style.display = "block"; // Show the contact information
+        AboutInfoDiv.style.display = "block"; // Show the contact information
+        ground.visible = true;
+        fadeInGround();
+
+
 
         break;
 
@@ -232,7 +292,7 @@ document.querySelectorAll(".custom-btn").forEach((button) => {
         contactInfoDiv.style.display = "none"; // Show the contact information
         gameInfoDiv.style.display = "block"; // Show the contact information
         WebInfoDiv.style.display = "none"; // Show the contact information
-        AboutMeInfoDiv.style.display = "none"; // Show the contact information
+        AboutInfoDiv.style.display = "none"; // Show the contact information
 
         break;
       case "WebDev":
@@ -240,7 +300,7 @@ document.querySelectorAll(".custom-btn").forEach((button) => {
         contactInfoDiv.style.display = "none"; // Show the contact information
         gameInfoDiv.style.display = "none"; // Show the contact information
         WebInfoDiv.style.display = "block"; // Show the contact information
-        AboutMeInfoDiv.style.display = "none"; // Show the contact information
+        AboutInfoDiv.style.display = "none"; // Show the contact information
         dragon.traverse((child) => {
             if (child.isMesh) {
               child.material.map = purpledragonTexture; // Apply the texture
@@ -252,7 +312,7 @@ document.querySelectorAll(".custom-btn").forEach((button) => {
         gameInfoDiv.style.display = "none"; // Show the contact information
         contactInfoDiv.style.display = "block"; // Show the contact information
         WebInfoDiv.style.display = "none"; // Show the contact information
-        AboutMeInfoDiv.style.display = "none"; // Show the contact information
+        AboutInfoDiv.style.display = "none"; // Show the contact information
 
         break;
       default:
