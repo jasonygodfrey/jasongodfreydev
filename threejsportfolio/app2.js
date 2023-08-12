@@ -161,7 +161,7 @@ function init() {
 
     
     // Find and play the 'idle Pose' animation
-    const targetAnimationName = "idle Pose";
+    const targetAnimationName = "Cycles_pose";
     let targetAnimationClip;
 
     for (let clip of gltf.animations) {
@@ -229,7 +229,7 @@ function animate() {
       Math.PI / 2; // Desired angle (facing the mouse)
 
     // Smoothly interpolate the dragon's current rotation towards the target angle
-    const alpha = 0.05; // This determines the speed/smoothness of the rotation. Lower value means smoother.
+    const alpha = 0.02; // This determines the speed/smoothness of the rotation. Lower value means smoother.
     dragon.rotation.y = THREE.MathUtils.lerp(
       dragon.rotation.y,
       -targetAngle,
