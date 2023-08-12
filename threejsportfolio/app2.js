@@ -65,7 +65,7 @@ function addText() {
     "Cruiser Fortress Engraved Italic_Italic.json",
     function (font) {
       // Main title
-      const geometryMain = new TextGeometry("Jason Godfrey", {
+      const geometryMain = new TextGeometry("", {
         font: font,
         size: 2,
         height: 1,
@@ -83,7 +83,7 @@ function addText() {
       scene.add(textMeshMain);
 
       // Subtitle
-      const geometrySub = new TextGeometry("Software Engineer", {
+      const geometrySub = new TextGeometry("", {
         font: font,
         size: 1.5, // Made this a bit smaller than the main title
         height: 0.5, // Adjusted thickness for subtext
