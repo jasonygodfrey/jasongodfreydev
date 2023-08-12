@@ -12,6 +12,10 @@ body, html {
     overflow: hidden; /* This will prevent scrollbars from appearing */
     width: 100%;
     height: 100%;
+    background-color: black;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
   }
   canvas {
     display: block;
@@ -66,9 +70,10 @@ body, html {
   position: absolute;  /* this will overlay on top of your canvas */
   top: 50%;
   left: 50%;
-  transform: translate(-200%, -50%);  /* centering the buttons on the screen */
+  transform: translate(-42%, 510%);  /* centering the buttons on the screen */
   z-index: 10;  /* This ensures the buttons are above the canvas */
-
+  display: flex;  /* This will arrange the buttons horizontally */
+  gap: 20px;  /* space between buttons */
 }
 
 .custom-btn {
@@ -156,7 +161,7 @@ body, html {
   border-radius: 10px;  /* Optional: rounds the corners of the background */
 
 }
-#AboutMe-info {
+#About-info {
   display: none;
   background: rgba(0, 0, 0, 0.6);  /* Semi-transparent background */
   color: white;              /* white text */
