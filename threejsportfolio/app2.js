@@ -17,12 +17,28 @@ let whiteSquare;
 let circleTexture = new THREE.TextureLoader().load("circle.png");
 
 const purpledragonTexture = new THREE.TextureLoader().load("textures/Dragon_ground_color.jpg");
-const groundGeometry = new THREE.PlaneGeometry(200, 200);  // You can adjust the size as needed
-const groundMaterial = new THREE.MeshBasicMaterial({ 
-    color: 0xff0000, 
-    transparent: true, 
-    opacity: 0  // Start with an opacity of 0, so it's initially invisible
+
+//ground 
+
+const groundGeometry = new THREE.PlaneGeometry(350, 350, 100, 100);
+const groundTexture = new THREE.TextureLoader().load("textures/greenground.png");
+const displacementTexture = new THREE.TextureLoader().load("textures/greengrounddisplacement.png");
+
+groundTexture.wrapS = THREE.RepeatWrapping;
+groundTexture.wrapT = THREE.RepeatWrapping;
+groundTexture.repeat.set(4, 4);  // Adjust the repeat values as needed
+const groundMaterial = new THREE.MeshPhongMaterial({
+  map: groundTexture,
+  displacementMap: displacementTexture,
+  displacementScale: 2,  // Adjust this value as needed
+  transparent: true, 
+  opacity: 0
+  
 });
+
+
+
+
 function fadeInGround() {
     const duration = 1000; // Fade-in duration in milliseconds (1 second in this case)
     const start = performance.now();
@@ -111,12 +127,14 @@ function init() {
   );
   
   // Position the camera for a cinematic angle
-  camera.position.set(0, 5, 40); // Adjust the position as needed
-  camera.lookAt(0, 0, 0); // Look at the origin of the scene
+  camera.position.set(0, -10, 69); // Adjust the position as needed
+  camera.lookAt(0, -5, 0); // Look at the origin of the scene
   
 
   // Create a renderer
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });  // Added alpha: true
+
+
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = true; // <-- Add this line here
 
@@ -142,6 +160,13 @@ function init() {
 
   scene.add(pointLight);
 
+
+  const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+directionalLight.position.set(10, 30, 20); // Adjust position to suit your scene
+directionalLight.castShadow = true;
+scene.add(directionalLight);
+
+
   // Load the dragon.obj model
   // ... rest of your code ...
 
@@ -154,9 +179,11 @@ function init() {
     // Make the dragon's skin wireframe
     dragon.traverse((child) => {
       if (child.isMesh) {
-        child.material.wireframe = true;
-        child.castShadow = true; // <-- Add this line here
-
+        child.material.wireframe = false; // Turn off wireframe
+        child.material.map = purpledragonTexture; // Apply the texture
+        child.material.needsUpdate = true; // Necessary after changing a material's properties
+        child.castShadow = true; // Enable shadow casting
+        child.receiveShadow = true; // Enable shadow receiving
       }
     });
 
@@ -200,9 +227,12 @@ ground.visible = false;
 ground.position.set(0, -21, 0); // Adjust as per requirement
 
 ground.receiveShadow = true;  // Optional: Enable if you want the ground to receive shadows
+ground.castShadow = false; // A ground plane typically doesn't need to cast shadows
+
 console.log(ground.material);
         scene.add(ground); // Add the ground to the scene here
-
+        ground.visible = true;
+        fadeInGround();
 
 
   addText();
@@ -283,14 +313,13 @@ document.querySelectorAll(".custom-btn").forEach((button) => {
         gameInfoDiv.style.display = "none"; // Show the contact information
         WebInfoDiv.style.display = "none"; // Show the contact information
         AboutInfoDiv.style.display = "block"; // Show the contact information
-        ground.visible = true;
-        fadeInGround();
+
 
 
 
         break;
 
-      case "GameDev":
+      case "Games":
         // Handle "GameDev" button click
         contactInfoDiv.style.display = "none"; // Show the contact information
         gameInfoDiv.style.display = "block"; // Show the contact information
@@ -298,7 +327,7 @@ document.querySelectorAll(".custom-btn").forEach((button) => {
         AboutInfoDiv.style.display = "none"; // Show the contact information
 
         break;
-      case "WebDev":
+      case "Web":
         // Handle "WebDev" button click
         contactInfoDiv.style.display = "none"; // Show the contact information
         gameInfoDiv.style.display = "none"; // Show the contact information
