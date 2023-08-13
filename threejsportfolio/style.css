@@ -97,7 +97,7 @@ body, html {
 
 .custom-btn.about-btn {
   background-image: url('button1.png');
-  background-size: 100px 45px;
+  background-size: 100px 41px;
   background-color: transparent;
   border: none;
   padding: 10px 20px;
@@ -135,7 +135,7 @@ body, html {
 
 .custom-btn.web-btn {
   background-image: url('button2.png');
-  background-size: 100px 45px;
+  background-size: 100px 41px;
   background-color: transparent;
   border: none;
   padding: 10px 20px;
@@ -172,7 +172,7 @@ body, html {
 
 .custom-btn.game-dev {
   background-image: url('button3.png');
-  background-size: 100px 45px;
+  background-size: 100px 42px;
   background-color: transparent;
   border: none;
   padding: 10px 20px;
