@@ -6,8 +6,14 @@ import {
   MeshBasicMaterial,
   Mesh,
 } from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.min.js";
+import { EffectComposer } from './three/examples/jsm/postprocessing/EffectComposer.js';
+import { RenderPass } from './three/examples/jsm/postprocessing/RenderPass.js';
+import { UnrealBloomPass } from './three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import { BokehPass } from './three/examples/jsm/postprocessing/BokehPass.js';
+import { FXAAShader } from './three/examples/jsm/shaders/FXAAShader.js';
+import { ShaderPass } from './three/examples/jsm/postprocessing/ShaderPass.js';
 
-let scene, camera, renderer, dragon, ground; // Add 'ground' here
+let scene, camera, renderer, dragon, ground, composer; // <-- Added composer here
 let mixers = []; // Declare an array to hold all mixers
 let mouse = new THREE.Vector2();
 let raycaster = new THREE.Raycaster();
@@ -132,22 +138,49 @@ function init() {
   
 
   // Create a renderer
-  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });  // Added alpha: true
+  renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });  // Set antialias to false as we will use FXAA later
 
 
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = true; // <-- Add this line here
 
   document.body.appendChild(renderer.domElement);
+  composer = new EffectComposer(renderer);
+  const renderPass = new RenderPass(scene, camera);
+  composer.addPass(renderPass);
+  const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
+bloomPass.threshold = 0.21;
+bloomPass.strength = 1.5;
+bloomPass.radius = 1;
+composer.addPass(bloomPass);
+const bokehPass = new BokehPass(scene, camera, {
+  focus: 1.0,
+  aperture: 0.0025,
+  maxblur: 0.01,
+  width: window.innerWidth,
+  height: window.innerHeight
+});
+composer.addPass(bokehPass);
+const fxaaPass = new ShaderPass(FXAAShader);
+fxaaPass.material.uniforms['resolution'].value.x = 1 / (window.innerWidth * window.devicePixelRatio);
+fxaaPass.material.uniforms['resolution'].value.y = 1 / (window.innerHeight * window.devicePixelRatio);
+composer.addPass(fxaaPass);
 
   // Handle window resizing
   window.addEventListener("resize", function () {
     const newWidth = window.innerWidth;
     const newHeight = window.innerHeight;
-    renderer.setSize(newWidth, newHeight);
+
     camera.aspect = newWidth / newHeight;
     camera.updateProjectionMatrix();
-  });
+
+    renderer.setSize(newWidth, newHeight);
+    composer.setSize(newWidth, newHeight);
+
+    fxaaPass.material.uniforms['resolution'].value.x = 1 / (newWidth * window.devicePixelRatio);
+    fxaaPass.material.uniforms['resolution'].value.y = 1 / (newHeight * window.devicePixelRatio);
+});
+
   //mouse
   document.addEventListener("mousemove", onMouseMove, false);
 
@@ -280,7 +313,7 @@ function animate() {
     mixer.update(0.0025); // Assuming a 60fps frame rate. Adjust this value if necessary.
   }
 
-  renderer.render(scene, camera);
+  composer.render();
 }
 
 animate(); // Call this after the init function
