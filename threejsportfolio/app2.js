@@ -16,7 +16,7 @@ let radius = 20; // Define the radius of the circular path
 let whiteSquare;
 let circleTexture = new THREE.TextureLoader().load("circle.png");
 
-const purpledragonTexture = new THREE.TextureLoader().load("textures/Dragon_Nor.jpg");
+const purpledragonTexture = new THREE.TextureLoader().load("textures/Dragon_ground_color.jpg");
 const groundGeometry = new THREE.PlaneGeometry(200, 200);  // You can adjust the size as needed
 const groundMaterial = new THREE.MeshBasicMaterial({ 
     color: 0xff0000, 
@@ -104,12 +104,15 @@ function init() {
   // Create scene and camera
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(
-    75,
+    45, // Adjust the field of view for a cinematic effect
     window.innerWidth / window.innerHeight,
     0.1,
     1000
   );
-  camera.position.z = 50; // or even further if needed
+  
+  // Position the camera for a cinematic angle
+  camera.position.set(0, 5, 40); // Adjust the position as needed
+  camera.lookAt(0, 0, 0); // Look at the origin of the scene
   
 
   // Create a renderer
@@ -161,7 +164,7 @@ function init() {
 
     
     // Find and play the 'idle Pose' animation
-    const targetAnimationName = "Cycles_pose";
+    const targetAnimationName = "idle Pose";
     let targetAnimationClip;
 
     for (let clip of gltf.animations) {
