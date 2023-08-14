@@ -20,7 +20,11 @@ background-size: cover;
 
   canvas {
     display: block;
-    z-index: 0; /* This ensures canvas is behind your other elements */
+    z-index: 2
+    
+    
+    
+    ; /* This ensures canvas is behind your other elements */
 
   }
 
@@ -36,7 +40,7 @@ background-size: cover;
     background-size: cover;
     background-repeat: no-repeat;
     background-position: center;
-    z-index: 2000;
+    z-index: 1;
 }
 
   
@@ -297,7 +301,6 @@ body, button, a {
   top: 190%;   /* Adjust the distance from the top as needed */
   left: 50%;
   transform: translateX(-50%);
-  z-index: 3000; /* Make sure it's above other elements */
 }
 
 .centered-header h1 {
@@ -305,6 +308,7 @@ body, button, a {
   margin: 0;
   font-size: 2.5em; /* Adjust font size as needed */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+
 }
 
 .centered-header h2 {

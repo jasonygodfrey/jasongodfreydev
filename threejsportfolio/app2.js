@@ -140,6 +140,7 @@ function init() {
   // Create a renderer
   renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });  // Set antialias to false as we will use FXAA later
 
+  renderer.setClearColor(0x000000, 0); // Set clear color to black and clearAlpha to 0
 
   renderer.setSize(window.innerWidth, window.innerHeight);
   renderer.shadowMap.enabled = true; // <-- Add this line here
@@ -281,7 +282,10 @@ console.log(ground.material);
  // Create the skybox material
  const skyboxMaterial = new THREE.MeshBasicMaterial({
    map: skyboxTexture,
-   side: THREE.BackSide // Make the material visible from the inside
+   side: THREE.BackSide, // Make the material visible from the inside
+   transparent: true,  // Set the material to be transparent
+   opacity: 0.1,       // Adjust the opacity as needed
+   
  });
 
  // Create the skybox geometry
@@ -300,7 +304,10 @@ console.log(ground.material);
 //fog
 
 }
-
+// Define parameters for cinematic orbit
+const orbitRadius = 60;
+const orbitSpeed = 0.005; // Adjust this value for desired speed
+const targetLookAt = new THREE.Vector3(0, -20, 0); // Adjust target position
 function animate() {
   requestAnimationFrame(animate);
 
@@ -323,7 +330,7 @@ function animate() {
       Math.PI / 2; // Desired angle (facing the mouse)
 
     // Smoothly interpolate the dragon's current rotation towards the target angle
-    const alpha = 0.02; // This determines the speed/smoothness of the rotation. Lower value means smoother.
+    const alpha = 0.006; // This determines the speed/smoothness of the rotation. Lower value means smoother.
     dragon.rotation.y = THREE.MathUtils.lerp(
       dragon.rotation.y,
       -targetAngle,
@@ -340,6 +347,11 @@ function animate() {
   for (let mixer of mixers) {
     mixer.update(0.0025); // Assuming a 60fps frame rate. Adjust this value if necessary.
   }
+
+
+
+
+
 
   composer.render();
 }
