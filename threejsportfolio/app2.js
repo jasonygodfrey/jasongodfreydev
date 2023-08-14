@@ -27,8 +27,8 @@ const purpledragonTexture = new THREE.TextureLoader().load("textures/Dragon_grou
 //ground 
 
 const groundGeometry = new THREE.PlaneGeometry(350, 350, 100, 100);
-const groundTexture = new THREE.TextureLoader().load("textures/greenground.png");
-const displacementTexture = new THREE.TextureLoader().load("textures/greengrounddisplacement.png");
+const groundTexture = new THREE.TextureLoader().load("textures/Fire_A_2.png");
+const displacementTexture = new THREE.TextureLoader().load("textures/greengrounddisplacement3.png");
 
 groundTexture.wrapS = THREE.RepeatWrapping;
 groundTexture.wrapT = THREE.RepeatWrapping;
@@ -36,9 +36,9 @@ groundTexture.repeat.set(4, 4);  // Adjust the repeat values as needed
 const groundMaterial = new THREE.MeshPhongMaterial({
   map: groundTexture,
   displacementMap: displacementTexture,
-  displacementScale: 2,  // Adjust this value as needed
-  transparent: true, 
-  opacity: 0
+  displacementScale: 20,  // Adjust this value as needed
+  transparent: true, // Set to true for transparency
+  opacity: .1, // Adjust this value to control transparency
   
 });
 
@@ -129,7 +129,7 @@ function init() {
     45, // Adjust the field of view for a cinematic effect
     window.innerWidth / window.innerHeight,
     0.1,
-    1000
+    3000
   );
   
   // Position the camera for a cinematic angle
@@ -149,8 +149,8 @@ function init() {
   const renderPass = new RenderPass(scene, camera);
   composer.addPass(renderPass);
   const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
-bloomPass.threshold = 0.21;
-bloomPass.strength = 1.5;
+bloomPass.threshold = 0.29;
+bloomPass.strength = 1.9;
 bloomPass.radius = 1;
 composer.addPass(bloomPass);
 const bokehPass = new BokehPass(scene, camera, {
@@ -212,8 +212,8 @@ scene.add(directionalLight);
     // Make the dragon's skin wireframe
     dragon.traverse((child) => {
       if (child.isMesh) {
-        child.material.wireframe = false; // Turn off wireframe
-        child.material.map = purpledragonTexture; // Apply the texture
+        child.material.wireframe = true; // Turn off wireframe
+        //child.material.map = purpledragonTexture; // Apply the texture
         child.material.needsUpdate = true; // Necessary after changing a material's properties
         child.castShadow = true; // Enable shadow casting
         child.receiveShadow = true; // Enable shadow receiving
@@ -245,11 +245,13 @@ scene.add(directionalLight);
       side: THREE.DoubleSide,
       transparent: true,
     });
-    let circleGeometry = new THREE.CircleGeometry(77.5, 32); // 7.5 is the radius and 32 is the number of segments
+    const circleGeometry = new THREE.CircleGeometry(77.5, 32);
     whiteSquare = new THREE.Mesh(circleGeometry, circleMaterial);
-    whiteSquare.position.z = -1; // Adjust this value to position the circle as far back as you want
+    whiteSquare.position.set(dragon.position.x, -20, dragon.position.z);
+    whiteSquare.rotation.set(-Math.PI / 2, 0, 0); // Rotate 90 degrees to lie flat
+    
+    scene.add(whiteSquare);
 
-    animate(); // Call the animate loop
   });
 
   ground = new THREE.Mesh(groundGeometry, groundMaterial);
@@ -263,6 +265,7 @@ ground.receiveShadow = true;  // Optional: Enable if you want the ground to rece
 ground.castShadow = false; // A ground plane typically doesn't need to cast shadows
 
 console.log(ground.material);
+
         scene.add(ground); // Add the ground to the scene here
         ground.visible = true;
         fadeInGround();
@@ -271,6 +274,31 @@ console.log(ground.material);
   addText();
 
   // ... rest of your code ...
+
+ // Skybox
+ const skyboxTexture = new THREE.TextureLoader().load('background.jpg');
+
+ // Create the skybox material
+ const skyboxMaterial = new THREE.MeshBasicMaterial({
+   map: skyboxTexture,
+   side: THREE.BackSide // Make the material visible from the inside
+ });
+
+ // Create the skybox geometry
+ const skyboxGeometry = new THREE.BoxGeometry(1000, 1000, 1000); // Adjust size as needed
+
+ // Create the skybox mesh
+ const skyboxMesh = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
+
+ // Add the skybox mesh to the scene
+ //scene.add(skyboxMesh);
+ scene.background = new THREE.CubeTexture();
+
+    console.log(scene.background)
+    console.log(scene);
+    
+//fog
+
 }
 
 function animate() {
