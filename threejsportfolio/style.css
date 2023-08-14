@@ -71,7 +71,7 @@ background-size: cover;
     
     text-align: center;
     position: absolute; 
-    bottom: 80px;   /* Adjust the distance from the bottom as needed */
+    bottom: 10%;   /* Adjust the distance from the bottom as needed */
     left: 50%;
     transform: translateX(-50%);
     z-index: 3000; /* Make sure it's above other elements */
