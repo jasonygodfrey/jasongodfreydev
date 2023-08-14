@@ -27,7 +27,7 @@ const purpledragonTexture = new THREE.TextureLoader().load("textures/Dragon_grou
 //ground 
 
 const groundGeometry = new THREE.PlaneGeometry(350, 350, 100, 100);
-const groundTexture = new THREE.TextureLoader().load("textures/Fire_A_2.png");
+const groundTexture = new THREE.TextureLoader().load("textures/greenground.png");
 const displacementTexture = new THREE.TextureLoader().load("textures/greengrounddisplacement3.png");
 
 groundTexture.wrapS = THREE.RepeatWrapping;
