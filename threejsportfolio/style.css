@@ -71,7 +71,7 @@ background-size: cover;
     
     text-align: center;
     position: absolute; 
-    bottom: 10%;   /* Adjust the distance from the bottom as needed */
+    bottom: 5%;   /* Adjust the distance from the bottom as needed */
     left: 50%;
     transform: translateX(-50%);
     z-index: 3000; /* Make sure it's above other elements */
@@ -294,7 +294,7 @@ body, button, a {
 .centered-header {
   text-align: center;
   position: absolute; 
-  top: 10px;   /* Adjust the distance from the top as needed */
+  top: 190%;   /* Adjust the distance from the top as needed */
   left: 50%;
   transform: translateX(-50%);
   z-index: 3000; /* Make sure it's above other elements */
