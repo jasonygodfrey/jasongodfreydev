@@ -529,7 +529,15 @@ function executeCommand(command) {
   if (command !== '') {
     const outputLine = document.createElement('p');
     outputLine.className = 'console-line';
-    outputLine.textContent = `> ${command}`;
+
+    const promptSpan = document.createElement('span');
+    promptSpan.textContent = '> ';
+    outputLine.appendChild(promptSpan);
+
+    const commandSpan = document.createElement('span');
+    commandSpan.textContent = command;
+    outputLine.appendChild(commandSpan);
+
     contentElement.appendChild(outputLine);
 
     // Scroll the console content to the bottom
@@ -537,4 +545,102 @@ function executeCommand(command) {
 
     inputElement.value = '';
   }
+}
+
+
+
+document.querySelector('.dir-btn').addEventListener('click', function() {
+  const directoryContent = `
+      <p class="console-line">//Directory:</p>
+      <p class="console-line"><a href="#" class="command-link">*ABOUT ｜ について</a></p>
+      <p class="console-line"><a href="#" class="command-link">*WEB ｜ ウェブ</a></p>
+      <p class="console-line"><a href="#" class="command-link">*GAMES ｜ ゲーム</a></p>
+      
+  `;
+
+  contentElement.innerHTML += directoryContent;
+  contentElement.scrollTop = contentElement.scrollHeight;
+
+  // Re-bind the click event to new command-links
+  document.querySelectorAll('.command-link').forEach(link => {
+    link.addEventListener('click', function(event) {
+      event.preventDefault();
+      const command = this.textContent.trim();
+      executeCommand(command);
+    });
+  });
+});
+
+
+const consoleElement = document.querySelector('.console');
+const resizeHandle = document.querySelector('.console-resize-handle');
+
+let isResizing = false;
+
+let initialWidth, initialHeight, initialMouseX, initialMouseY;
+
+resizeHandle.addEventListener('mousedown', (event) => {
+  isResizing = true;
+  initialWidth = consoleElement.offsetWidth;
+  initialHeight = consoleElement.offsetHeight;
+  initialMouseX = event.clientX;
+  initialMouseY = event.clientY;
+
+  document.addEventListener('mousemove', handleMouseMove);
+  document.addEventListener('mouseup', () => {
+    isResizing = false;
+    document.removeEventListener('mousemove', handleMouseMove);
+  });
+});
+
+const INITIAL_WIDTH = consoleElement.offsetWidth;
+const INITIAL_HEIGHT = consoleElement.offsetHeight;
+
+function handleMouseMove(event) {
+  if (!isResizing) return;
+
+  const dx = event.clientX - initialMouseX;
+  const dy = event.clientY - initialMouseY;
+
+  const newWidth = Math.max(initialWidth + dx, INITIAL_WIDTH);
+  const newHeight = Math.max(initialHeight + dy, INITIAL_HEIGHT);
+
+  consoleElement.style.width = `${newWidth}px`;
+  consoleElement.style.height = `${newHeight}px`;
+}
+
+
+
+
+const dragBar = document.querySelector('.console-drag-bar');
+
+let isDragging = false;
+let prevX, prevY;
+
+dragBar.addEventListener('mousedown', (event) => {
+  isDragging = true;
+  prevX = event.clientX;
+  prevY = event.clientY;
+
+  document.addEventListener('mousemove', handleDragMove);
+  document.addEventListener('mouseup', () => {
+    isDragging = false;
+    document.removeEventListener('mousemove', handleDragMove);
+  });
+});
+
+function handleDragMove(event) {
+  if (!isDragging) return;
+
+  const dx = event.clientX - prevX;
+  const dy = event.clientY - prevY;
+
+  const currentLeft = parseInt(window.getComputedStyle(consoleElement).left, 10);
+  const currentTop = parseInt(window.getComputedStyle(consoleElement).top, 10);
+
+  consoleElement.style.left = `${currentLeft + dx}px`;
+  consoleElement.style.top = `${currentTop + dy}px`;
+
+  prevX = event.clientX;
+  prevY = event.clientY;
 }

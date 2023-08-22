@@ -292,7 +292,6 @@ background-size: cover;
   }
 }
 body, button, a {
-  font-family: 'Cathedral', sans-serif; /* Use Cathedral font and fallback to sans-serif if Cathedral doesn't load */
 }
 
 .centered-header {
@@ -347,6 +346,7 @@ body, button, a {
   text-orientation: upright;
 }
 .console-container {
+
   position: fixed;
   bottom: 0;
   left: 0;
@@ -373,6 +373,11 @@ body, button, a {
   flex-direction: column;
   backdrop-filter: blur(10px);
   box-shadow: 0px 0px 20px rgba(0, 255, 0, 0.5);
+  position: fixed; /* add this */
+  bottom: 20px;  /* Space from the bottom of the viewport */
+  left: calc(50% - 200px);  /* Half the viewport width minus half the console's max-width */
+
+
 }
 
 /* Media Query to adjust the max-width based on screen width */
@@ -382,7 +387,7 @@ body, button, a {
   }
 }
 .console-header {
-  font-size: 1.2em;
+  font-size: 11px;
   text-align: left;
   margin-bottom: 10px;
 }
@@ -393,6 +398,9 @@ body, button, a {
     /* Hide the default scrollbar */
     scrollbar-width: none;
     -ms-overflow-style: none;
+    font-size: 14px;
+    flex-grow: 1;
+
   }
 
   /* Style the scrollbar track */
@@ -415,8 +423,13 @@ body, button, a {
   margin: 0;
   white-space: pre-wrap;
   overflow: hidden;
-  animation: typeAnimation 4s steps(30, end) forwards, blinkCursor 0.5s forwards;
+  animation: typeAnimation 2.5s steps(30, end) forwards, blinkCursor 0.5s forwards;
+  display: flex; /* add this */
+  align-items: center; /* add this */
+  overflow: hidden;
+  white-space: nowrap;
 }
+
 
 @keyframes typeAnimation {
   from {
@@ -424,7 +437,9 @@ body, button, a {
   }
   to {
     width: 100%;
+    
   }
+  
 }
 
 @keyframes blinkCursor {
@@ -444,12 +459,14 @@ body, button, a {
   align-items: center;
   background: transparent; /* Set background to transparent */
   border: none; /* Remove the border */
+  margin-top: 4px;
+
 }
 
 /* Style the input element itself */
 #commandInput {
   width: 100%;
-  padding: 5px;
+  padding: 0px;
   background: transparent; /* Set background to transparent */
   border: none; /* Remove the border */
   color: #0f0; /* Set text color to white */
@@ -478,4 +495,41 @@ body, button, a {
 }
 .command-link:visited {
   color: rgb(167, 0, 0);
+}
+
+
+.dir-btn {
+  background-color: rgba(0, 255, 0, 0.2);
+  border: 1px solid #62ff32;
+  border-radius: 4px;
+  padding: 2px 6px;
+  color: #0f0;
+  font-family: 'Courier New', monospace;
+  cursor: pointer;
+  margin-left: 10px;
+  transition: background-color 0.3s;
+}
+
+.dir-btn:hover {
+  background-color: rgba(0, 255, 0, 0.4);
+}
+.console-resize-handle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 0px;
+  height: 0px;
+  background-color: rgba(0, 255, 0, 0.4);
+  cursor: nwse-resize; /* diagonal resize cursor */
+  border-radius: 0 0 6px 0;
+}
+
+
+.console-drag-bar {
+  width: 100%;
+  height: 7px;
+  background-color: rgba(0, 255, 0, 0);
+  cursor: move;
+  margin: 0 auto;
+
 }
