@@ -102,7 +102,7 @@ background-size: cover;
 }
 
 .custom-btn.about-btn {
-  background-image: url('button1.png');
+  background-image: url('abutton1.png');
   background-size: 100px 41px;
   background-color: transparent;
   border: none;
@@ -140,7 +140,7 @@ background-size: cover;
 
 
 .custom-btn.web-btn {
-  background-image: url('button2.png');
+  background-image: url('abutton2.png');
   background-size: 100px 41px;
   background-color: transparent;
   border: none;
@@ -177,7 +177,7 @@ background-size: cover;
 }
 
 .custom-btn.game-dev {
-  background-image: url('button3.png');
+  background-image: url('abutton3.png');
   background-size: 100px 42px;
   background-color: transparent;
   border: none;
@@ -308,6 +308,7 @@ body, button, a {
   margin: 0;
   font-size: 2.5em; /* Adjust font size as needed */
   text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+  z-index: 3;
 
 }
 
@@ -318,3 +319,150 @@ body, button, a {
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
 }
 
+/* Sidebar Styles */
+
+.sidebar {
+  position: fixed;
+  bottom: 0; /* Position the sidebar at the bottom */
+  left: 0;
+  width: 100%; /* Make the sidebar full width */
+  max-width: none; /* Reset max-width */
+  height: 10%; /* Auto adjust height */
+  background: rgba(255, 255, 255, 0.452);
+  backdrop-filter: blur(10px);
+  z-index: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.sidebar h3 {
+  color: white;
+  font-size: 150%;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+  margin-bottom: 10px;
+  writing-mode: vertical-rl;
+  text-orientation: upright;
+}
+.console-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  z-index: 1000;
+  padding: 20px 0;
+}
+
+.console {
+  width: 75%; /* Full width by default */
+  max-width: 400px; /* Limit the maximum width to 600px */
+  height: 180px; /* Set a fixed height for the console */
+  padding: 10px;
+  border: 2px solid #62ff32;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.644);
+  color: #0f0;
+  font-family: 'Courier New', monospace;
+  display: flex;
+  flex-direction: column;
+  backdrop-filter: blur(10px);
+  box-shadow: 0px 0px 20px rgba(0, 255, 0, 0.5);
+}
+
+/* Media Query to adjust the max-width based on screen width */
+@media (max-width: 600px) {
+  .console {
+    max-width: 100%; /* Allow full width on smaller screens */
+  }
+}
+.console-header {
+  font-size: 1.2em;
+  text-align: left;
+  margin-bottom: 10px;
+}
+
+   /* Add scrollbar to the console content */
+   .console-content {
+    overflow-y: auto;
+    /* Hide the default scrollbar */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  /* Style the scrollbar track */
+  .console-content::-webkit-scrollbar {
+    width: 8px; /* Adjust as needed */
+  }
+  
+  /* Style the scrollbar thumb */
+  .console-content::-webkit-scrollbar-thumb {
+    background-color: #62ff32;
+    border-radius: 4px;
+  }
+
+  /* Add glow effect to the scrollbar thumb */
+  .console-content::-webkit-scrollbar-thumb:active {
+    box-shadow: 0 0 10px #62ff32;
+  }
+
+.console-line {
+  margin: 0;
+  white-space: pre-wrap;
+  overflow: hidden;
+  animation: typeAnimation 4s steps(30, end) forwards, blinkCursor 0.5s forwards;
+}
+
+@keyframes typeAnimation {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+
+@keyframes blinkCursor {
+  from,
+  to {
+    border-right-color: transparent;
+  }
+  50% {
+    border-right-color: white;
+  }
+}
+
+
+/* Update the styling for the text input field */
+.console-input {
+  display: flex;
+  align-items: center;
+  background: transparent; /* Set background to transparent */
+  border: none; /* Remove the border */
+}
+
+/* Style the input element itself */
+#commandInput {
+  width: 100%;
+  padding: 5px;
+  background: transparent; /* Set background to transparent */
+  border: none; /* Remove the border */
+  color: #0f0; /* Set text color to white */
+  outline: none; /* Remove the default focus outline */
+}
+
+/* Optional: Add a placeholder color */
+#commandInput::placeholder {
+  color: rgba(255, 255, 255, 0.5); /* Set a semi-transparent white color */
+}
+
+
+.prompt {
+  margin-right: 5px;
+  
+}

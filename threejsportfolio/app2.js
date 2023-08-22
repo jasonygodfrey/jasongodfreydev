@@ -15,12 +15,14 @@ import { ShaderPass } from './three/examples/jsm/postprocessing/ShaderPass.js';
 
 let scene, camera, renderer, dragon, ground, composer; // <-- Added composer here
 let mixers = []; // Declare an array to hold all mixers
+let particleGeometry;
+let particleVertices = [];
 let mouse = new THREE.Vector2();
 let raycaster = new THREE.Raycaster();
 let angle = 0; // Initial angle
 let radius = 20; // Define the radius of the circular path
 let whiteSquare;
-let circleTexture = new THREE.TextureLoader().load("circle.png");
+let circleTexture = new THREE.TextureLoader().load("circle4.png");
 
 const purpledragonTexture = new THREE.TextureLoader().load("textures/Dragon_ground_color.jpg");
 
@@ -120,9 +122,38 @@ function addText() {
   );
 }
 
+const MAX_DISTANCE = 10; // This is the distance up to which particles will surround the dragon
+
+function updateParticles() {
+  particleVertices.forEach((vertex, index) => {
+      let direction = vertex.clone().sub(dragon.position).normalize();
+      let distance = vertex.distanceTo(dragon.position);
+
+      // If a particle is too far from the dragon, reset its position closer to the dragon
+      if (distance > MAX_DISTANCE) {
+          let offset = direction.multiplyScalar(distance - MAX_DISTANCE);
+          particleVertices[index].sub(offset);
+      } else {
+          // Add a slight random movement to each particle to make the effect more dynamic
+          particleVertices[index].add(new THREE.Vector3((Math.random() - 0.5) * 0.1, (Math.random() - 0.5) * 0.1, (Math.random() - 0.5) * 0.1));
+      }
+  });
+
+  // Update the geometry to reflect the new particle positions
+  particleGeometry = new THREE.BufferGeometry();
+  particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(particleVertices, 3));
+  
+  const particleMaterial = new THREE.PointsMaterial({ size: 0.1 }); // or any other material setup you prefer
+  const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+  
+  //scene.add(particleSystem);
+  
+}
+
 init();
 
 function init() {
+
   // Create scene and camera
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(
@@ -202,7 +233,7 @@ scene.add(directionalLight);
 
 
   // Load the dragon.obj model
-  // ... rest of your code ...
+
 
   const loader = new GLTFLoader();
   loader.load("Dragon.glb", function (gltf) {
@@ -211,16 +242,57 @@ scene.add(directionalLight);
     dragon.position.set(0, -20, 0);
     scene.add(dragon);
     // Make the dragon's skin wireframe
-    dragon.traverse((child) => {
-      if (child.isMesh) {
-        child.material.wireframe = true; // Turn off wireframe
-        //child.material.map = purpledragonTexture; // Apply the texture
-        child.material.needsUpdate = true; // Necessary after changing a material's properties
-        child.castShadow = true; // Enable shadow casting
-        child.receiveShadow = true; // Enable shadow receiving
-      }
-    });
 
+    
+
+
+
+ // Traverse to set dragon's properties and gather its vertices
+ dragon.traverse((child) => {
+  if (child.isMesh) {
+      child.material.wireframe = true;
+      child.material.needsUpdate = true;
+      child.castShadow = true;
+      child.receiveShadow = true;
+
+      let positions;
+      if (child.geometry.isBufferGeometry) {
+          positions = child.geometry.attributes.position.array;
+          for (let i = 0; i < positions.length; i += 3) {
+              particleVertices.push(new THREE.Vector3(positions[i], positions[i + 1], positions[i + 2]));
+          }
+      } else if (child.geometry.isGeometry) {
+          particleVertices.push(...child.geometry.vertices);
+      }
+  }
+});
+ // Calculate the centroid of the particles
+ let centroid = new THREE.Vector3();
+ particleVertices.forEach(vertex => {
+     centroid.add(vertex);
+ });
+ centroid.divideScalar(particleVertices.length);
+ // Offset the particles around the dragon
+ let offsetDistance = 5;
+ for (let i = 0; i < particleVertices.length; i++) {
+     let direction = particleVertices[i].clone().sub(centroid).normalize();
+     particleVertices[i].add(direction.multiplyScalar(offsetDistance));
+ }
+
+   
+
+    const particleMaterial = new THREE.PointsMaterial({
+      color: 0xffffff,
+      size: 0.1,  // Size of each particle
+      map: new THREE.TextureLoader().load("textures/blue.png"),  // Optional: Use a sprite texture for particles
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
+  });
+  
+  const particleGeometry = new THREE.BufferGeometry().setFromPoints(particleVertices);
+  const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+//scene.add(particleSystem);
 
 
     
@@ -308,8 +380,13 @@ console.log(ground.material);
 const orbitRadius = 60;
 const orbitSpeed = 0.005; // Adjust this value for desired speed
 const targetLookAt = new THREE.Vector3(0, -20, 0); // Adjust target position
+
+
 function animate() {
   requestAnimationFrame(animate);
+
+
+  updateParticles();
 
   // Update the picking ray with the camera and mouse position
   raycaster.setFromCamera(mouse, camera);
@@ -328,6 +405,7 @@ function animate() {
         intersection.x - dragon.position.x
       ) -
       Math.PI / 2; // Desired angle (facing the mouse)
+      
 
     // Smoothly interpolate the dragon's current rotation towards the target angle
     const alpha = 0.006; // This determines the speed/smoothness of the rotation. Lower value means smoother.
@@ -425,3 +503,25 @@ document.querySelectorAll(".custom-btn").forEach((button) => {
     }
   });
 });
+
+
+const inputElement = document.getElementById('commandInput');
+    const contentElement = document.querySelector('.console-content');
+    
+    inputElement.addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        const inputText = inputElement.value.trim();
+        if (inputText !== '') {
+          const outputLine = document.createElement('p');
+          outputLine.className = 'console-line';
+          outputLine.textContent = `> ${inputText}`;
+          contentElement.appendChild(outputLine);
+
+          // Scroll the console content to the bottom
+          contentElement.scrollTop = contentElement.scrollHeight;
+
+          inputElement.value = '';
+        }
+        event.preventDefault();
+      }
+    });
