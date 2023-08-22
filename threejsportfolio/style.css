@@ -403,7 +403,7 @@ body, button, a {
   /* Style the scrollbar thumb */
   .console-content::-webkit-scrollbar-thumb {
     background-color: #62ff32;
-    border-radius: 4px;
+    border-radius: 0px;
   }
 
   /* Add glow effect to the scrollbar thumb */
@@ -465,4 +465,17 @@ body, button, a {
 .prompt {
   margin-right: 5px;
   
+}
+.command-link {
+  color: rgb(0, 255, 68);
+  text-decoration: none; /* this is to remove the default underline of links */
+  font-weight: bold;
+
+}
+
+.command-link:hover {
+  color: #15fc00; /* you can adjust this to the hover color you want */
+}
+.command-link:visited {
+  color: rgb(167, 0, 0);
 }

@@ -506,22 +506,35 @@ document.querySelectorAll(".custom-btn").forEach((button) => {
 
 
 const inputElement = document.getElementById('commandInput');
-    const contentElement = document.querySelector('.console-content');
+const contentElement = document.querySelector('.console-content');
+
+document.querySelectorAll('.command-link').forEach(link => {
+  link.addEventListener('click', function(event) {
+    event.preventDefault();
     
-    inputElement.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter') {
-        const inputText = inputElement.value.trim();
-        if (inputText !== '') {
-          const outputLine = document.createElement('p');
-          outputLine.className = 'console-line';
-          outputLine.textContent = `> ${inputText}`;
-          contentElement.appendChild(outputLine);
+    const command = this.textContent.trim();
+    executeCommand(command);
+  });
+});
 
-          // Scroll the console content to the bottom
-          contentElement.scrollTop = contentElement.scrollHeight;
+inputElement.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    const inputText = inputElement.value.trim();
+    executeCommand(inputText);
+    event.preventDefault();
+  }
+});
 
-          inputElement.value = '';
-        }
-        event.preventDefault();
-      }
-    });
+function executeCommand(command) {
+  if (command !== '') {
+    const outputLine = document.createElement('p');
+    outputLine.className = 'console-line';
+    outputLine.textContent = `> ${command}`;
+    contentElement.appendChild(outputLine);
+
+    // Scroll the console content to the bottom
+    contentElement.scrollTop = contentElement.scrollHeight;
+
+    inputElement.value = '';
+  }
+}
