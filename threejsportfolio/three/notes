@@ -1,0 +1,21 @@
+You want to increase the geometric detail of the model programmatically in Three.js. While Three.js doesn't have built-in tools for subdividing geometry in the same way as Blender's subdivision surface modifier, there are ways you can achieve similar results.
+
+One of the common methods is to use a tessellation or subdivision algorithm to increase the number of vertices of your model. Here's a way to do this using the Three.js subdivision modifier (though, you'd need to check for its compatibility with the version of Three.js you are using):
+
+Include the SubdivisionModifier script: Ensure you have the SubdivisionModifier.js script included in your project.
+
+Apply the Subdivision Modifier:
+
+javascript
+Copy code
+let geometry = dragon.geometry;
+
+// Ensure the geometry is a BufferGeometry type, as SubdivisionModifier works with Geometry type
+if(geometry instanceof THREE.BufferGeometry) {
+    geometry = new THREE.Geometry().fromBufferGeometry(geometry);
+}
+
+let modifier = new THREE.SubdivisionModifier(2); // 2 is the number of subdivisions
+modifier.modify(geometry);
+
+dragon.geometry = new THREE.BufferGeometry().fromGeometry(geometry);
