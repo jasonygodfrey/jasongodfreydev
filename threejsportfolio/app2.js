@@ -24,9 +24,69 @@ let angle = 0; // Initial angle
 let radius = 20; // Define the radius of the circular path
 let whiteSquare;
 let circleTexture = new THREE.TextureLoader().load("circle4.png");
+let textMeshMain; // Declare at the top-level of your script
 
 const purpledragonTexture = new THREE.TextureLoader().load("textures/Dragon_ground_color.jpg");
 
+
+//text
+function addText() {
+    const fontLoader = new FontLoader();
+  
+    fontLoader.load(
+      "./three/examples/fonts/Noto Sans JP_Bold.json",
+      function (font) {
+        // Main title
+        const geometryMain = new TextGeometry("JasonGodfrey.dev ｜ ジェイソン・ゴッドフリー", {
+          font: font,
+          size: 0.8,
+          height: 0,
+          curveSegments: 12,
+          bevelEnabled: false,
+          bevelThickness: 0.5,
+          bevelSize: 0.3,
+          bevelOffset: 0,
+          bevelSegments: 5,
+          opacity: 1,
+          transparent: true,
+        });
+  
+        const materialMain = new MeshBasicMaterial({ color: 0x000000 }); // Platinum black
+        textMeshMain = new Mesh(geometryMain, materialMain);
+        textMeshMain.position.set(-17, 14, 0);
+        
+        scene.add(textMeshMain);
+        textMeshMain.rotation.y = Math.PI / 0.100195; // Rotate the text 90 degrees to the right
+
+
+
+
+        
+        // Draw a line underneath the text
+        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000 }); // Same color as the text
+        const points = [];
+        points.push(new THREE.Vector3(-15, 13, 0)); // Adjust this
+        points.push(new THREE.Vector3(5, 13, 0));   // And this
+        const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+        const line = new THREE.Line(lineGeometry, lineMaterial);
+        //scene.add(line);
+  
+        // Subtitle
+        const geometrySub = new TextGeometry("TEST", {
+          font: font,
+          size: 1.5, // Made this a bit smaller than the main title
+          height: 0.5, // Adjusted thickness for subtext
+  
+        });
+  
+        const materialSub = new MeshBasicMaterial({ color: 0xffffff });
+        const textMeshSub = new Mesh(geometrySub, materialSub);
+        textMeshSub.position.set(-18, 26, 0); // Positioned below main title
+        scene.add(textMeshSub);
+      }
+    );
+  }
+  
 //ground 
 
 const groundGeometry = new THREE.PlaneGeometry(350, 350, 100, 100);
@@ -59,7 +119,7 @@ function fadeInGround() {
             ground.material.opacity = (elapsed / duration);
             requestAnimationFrame(animateFadeIn);
         } else {
-            ground.material.opacity = 1; // Ensure that the opacity is set to 1 at the end
+            ground.material.opacity = 0; // Ensure that the opacity is set to 1 at the end
         }
         ground.material.needsUpdate = true;
     }
@@ -83,45 +143,7 @@ document.addEventListener("mousemove", onMouseMove, false);
 document.addEventListener("touchmove", onMouseMove, false);
 
 
-function addText() {
-  const fontLoader = new FontLoader();
 
-  fontLoader.load(
-    "Cruiser Fortress Engraved Italic_Italic.json",
-    function (font) {
-      // Main title
-      const geometryMain = new TextGeometry("", {
-        font: font,
-        size: 2,
-        height: 1,
-        curveSegments: 12,
-        bevelEnabled: false,
-        bevelThickness: 0.5,
-        bevelSize: 0.3,
-        bevelOffset: 0,
-        bevelSegments: 5,
-      });
-
-      const materialMain = new MeshBasicMaterial({ color: 0xffffff });
-      const textMeshMain = new Mesh(geometryMain, materialMain);
-      textMeshMain.position.set(-19, 30, 0); // Adjusted y position slightly
-      scene.add(textMeshMain);
-
-      // Subtitle
-      const geometrySub = new TextGeometry("", {
-        font: font,
-        size: 1.5, // Made this a bit smaller than the main title
-        height: 0.5, // Adjusted thickness for subtext
-
-      });
-
-      const materialSub = new MeshBasicMaterial({ color: 0xffffff });
-      const textMeshSub = new Mesh(geometrySub, materialSub);
-      textMeshSub.position.set(-18, 26, 0); // Positioned below main title
-      scene.add(textMeshSub);
-    }
-  );
-}
 
 const MAX_DISTANCE = 10; // This is the distance up to which particles will surround the dragon
 
@@ -158,16 +180,18 @@ function init() {
   // Create scene and camera
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(
-    45, // Adjust the field of view for a cinematic effect
+    30, // Adjust the field of view for a cinematic effect
     window.innerWidth / window.innerHeight,
     0.1,
     3000
   );
   
   // Position the camera for a cinematic angle
-  camera.position.set(0, -10, 69); // Adjust the position as needed
-  camera.lookAt(0, -5, 0); // Look at the origin of the scene
-  
+  //camera.position.set(0, -10, 69); // Adjust the position as needed
+  //camera.lookAt(0, -5, 0); // Look at the origin of the scene
+  camera.position.set(-10, -13, 79); // Moved the camera slightly to the left
+camera.lookAt(-4, -5, 0); // Have the camera look slightly to the right
+
 
   // Create a renderer
   renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });  // Set antialias to false as we will use FXAA later
@@ -251,6 +275,8 @@ scene.add(directionalLight);
  // Traverse to set dragon's properties and gather its vertices
  dragon.traverse((child) => {
   if (child.isMesh) {
+    child.material.color.set(0x000000); // Set the color to black
+
       child.material.wireframe = true;
       child.material.needsUpdate = true;
       child.castShadow = true;
@@ -354,10 +380,10 @@ console.log(ground.material);
 
  // Create the skybox material
  const skyboxMaterial = new THREE.MeshBasicMaterial({
-   map: skyboxTexture,
+    color: 0xE5E4E2, // Platinum white color in HEX
    side: THREE.BackSide, // Make the material visible from the inside
    transparent: true,  // Set the material to be transparent
-   opacity: 0.1,       // Adjust the opacity as needed
+   opacity: 0.327,       // Adjust the opacity as needed
    
  });
 
@@ -368,7 +394,7 @@ console.log(ground.material);
  const skyboxMesh = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
 
  // Add the skybox mesh to the scene
- //scene.add(skyboxMesh);
+ scene.add(skyboxMesh);
  scene.background = new THREE.CubeTexture();
 
     console.log(scene.background)
@@ -428,6 +454,12 @@ function animate() {
   }
 
 
+  if (textMeshMain) {
+    //textMeshMain.lookAt(camera.position);
+    
+    //console.log("Text is facing the camera");
+
+}
 
 
 
