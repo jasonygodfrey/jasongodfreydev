@@ -37,7 +37,7 @@ function addText() {
       "./three/examples/fonts/Noto Sans JP_Bold.json",
       function (font) {
         // Main title
-        const geometryMain = new TextGeometry("JasonGodfrey.dev ｜ ジェイソン・ゴッドフリー", {
+        const geometryMain = new TextGeometry("JasonGodfrey.dev", {
           font: font,
           size: 0.8,
           height: 0,
@@ -49,40 +49,65 @@ function addText() {
           bevelSegments: 5,
           opacity: 1,
           transparent: true,
+          
         });
   
-        const materialMain = new MeshBasicMaterial({ color: 0x000000 }); // Platinum black
+        const materialMain = new MeshBasicMaterial({ color: 0x717171 }); // Platinum black
         textMeshMain = new Mesh(geometryMain, materialMain);
-        textMeshMain.position.set(-17, 14, 0);
+        textMeshMain.position.set(-14, 5, 20);
         
         scene.add(textMeshMain);
         textMeshMain.rotation.y = Math.PI / 0.100195; // Rotate the text 90 degrees to the right
 
-
-
-
-        
-        // Draw a line underneath the text
-        const lineMaterial = new THREE.LineBasicMaterial({ color: 0x000000 }); // Same color as the text
-        const points = [];
-        points.push(new THREE.Vector3(-15, 13, 0)); // Adjust this
-        points.push(new THREE.Vector3(5, 13, 0));   // And this
-        const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
-        const line = new THREE.Line(lineGeometry, lineMaterial);
-        //scene.add(line);
   
         // Subtitle
-        const geometrySub = new TextGeometry("TEST", {
-          font: font,
-          size: 1.5, // Made this a bit smaller than the main title
-          height: 0.5, // Adjusted thickness for subtext
-  
+        const geometrySub = new TextGeometry("ジェイソン・ゴッドフリー", {
+            font: font,
+            size: 0.608,
+            height: 0,
+            curveSegments: 12,
+            bevelEnabled: false,
+            bevelThickness: 0.5,
+            bevelSize: 0.3,
+            bevelOffset: 0,
+            bevelSegments: 5,
+            opacity: 1,
+            transparent: true,
         });
   
-        const materialSub = new MeshBasicMaterial({ color: 0xffffff });
+        const materialSub = new MeshBasicMaterial({ color: 0x717171 });
         const textMeshSub = new Mesh(geometrySub, materialSub);
-        textMeshSub.position.set(-18, 26, 0); // Positioned below main title
+        textMeshSub.position.set(-14, 3.5, 20);; // Positioned below main title
         scene.add(textMeshSub);
+
+
+// Logo
+const chars = ["開", "発", "者"];
+const spacing = 6.5; // Adjust this value based on desired spacing between characters
+let yOffset = 2.5;  // Starting position (adjust this if you want to change the logo's vertical position)
+
+for (let i = 0; i < chars.length; i++) {
+    const geometryLogo = new TextGeometry(chars[i], {
+        font: font,
+        size: 4.608,
+        height: 0,
+        curveSegments: 12,
+        bevelEnabled: false,
+        bevelThickness: 0.5,
+        bevelSize: 0.3,
+        bevelOffset: 0,
+        bevelSegments: 5,
+        opacity: 1,
+        transparent: true,
+    });
+
+    const materialLogo = new MeshBasicMaterial({ color: 0xb80000 });
+    const textMeshLogo = new Mesh(geometryLogo, materialLogo);
+    textMeshLogo.position.set(-12, yOffset, 18);
+    scene.add(textMeshLogo);
+
+    yOffset -= spacing; // Decrease the y offset for each subsequent character
+}
       }
     );
   }
