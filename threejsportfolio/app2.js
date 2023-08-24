@@ -18,6 +18,9 @@ let scene, camera, renderer, dragon, ground, composer; // <-- Added composer her
 let mixers = []; // Declare an array to hold all mixers
 let particleGeometry;
 let particleVertices = [];
+let particleColors = [];
+let textMeshes = [];
+let velocities = [];
 let mouse = new THREE.Vector2();
 let raycaster = new THREE.Raycaster();
 let angle = 0; // Initial angle
@@ -39,7 +42,7 @@ function addText() {
         // Main title
         const geometryMain = new TextGeometry("JASONGODFREY.DEV", {
           font: font,
-          size: 0.5,
+          size: 0.443,
           height: 0,
           curveSegments: 12,
           bevelEnabled: false,
@@ -90,30 +93,28 @@ for (let i = 0; i < subtitleChars.length; i++) {
 
 // Logo
 const chars = ["開", "発", "者"];
-const spacing = 6.5; // Adjust this value based on desired spacing between characters
-let yOffset = 1.4;  // Starting position (adjust this if you want to change the logo's vertical position)
+const spacing = 6.5;
+let yOffset = 1.4;
 
 for (let i = 0; i < chars.length; i++) {
-    const geometryLogo = new TextGeometry(chars[i], {
-        font: font,
-        size: 4.608,
-        height: 0,
-        curveSegments: 12,
-        bevelEnabled: false,
-        bevelThickness: 0.5,
-        bevelSize: 0.3,
-        bevelOffset: 0,
-        bevelSegments: 5,
-        opacity: 1,
-        transparent: true,
-    });
+  const geometryLogo = new THREE.TextGeometry(chars[i], {
+    font: font,
+    size: 4.608,
+    height: 0,
+    curveSegments: 12,
+    bevelEnabled: false
+  });
 
-    const materialLogo = new MeshBasicMaterial({ color: 0xb80000 });
-    const textMeshLogo = new Mesh(geometryLogo, materialLogo);
-    textMeshLogo.position.set(-12, yOffset, 18);
-    scene.add(textMeshLogo);
+  const materialLogo = new THREE.MeshBasicMaterial({ color: 0xb80000 });
+  const textMeshLogo = new THREE.Mesh(geometryLogo, materialLogo);
+  textMeshLogo.position.set(-12, yOffset, 18);
+  scene.add(textMeshLogo);
 
-    yOffset -= spacing; // Decrease the y offset for each subsequent character
+  // Add the mesh and its initial velocity to arrays
+  //textMeshes.push(textMeshLogo);
+  velocities.push(0);
+
+  yOffset -= spacing;
 }
       }
     );
@@ -342,7 +343,7 @@ scene.add(directionalLight);
 
     const particleMaterial = new THREE.PointsMaterial({
       color: 0xffffff,
-      size: 0.1,  // Size of each particle
+      size: 1,  // Size of each particle
       map: new THREE.TextureLoader().load("textures/blue.png"),  // Optional: Use a sprite texture for particles
       transparent: true,
       blending: THREE.AdditiveBlending,
@@ -493,6 +494,21 @@ function animate() {
 
 }
 
+
+// Update the y position of the text meshes
+for (let i = 0; i < textMeshes.length; i++) {
+  const acceleration = -0.005;  // Gravity
+
+  // Update velocity and position based on acceleration
+  velocities[i] += acceleration;
+  textMeshes[i].position.y += velocities[i];
+
+  // Reset position and velocity when the text goes too low
+  if (textMeshes[i].position.y < -20) {
+    textMeshes[i].position.y = 20;
+    velocities[i] = 0;
+  }
+}
 
 
 
