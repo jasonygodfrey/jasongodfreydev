@@ -66,7 +66,7 @@
     }
     
     nav ul.nav-links a.active-link {
-      color: #15fc00;  /* Change this to the color you want for the active link */
+      color: #ffffff;  /* Change this to the color you want for the active link */
     }
   
     /* Button Styles */
@@ -346,38 +346,33 @@
     text-orientation: upright;
   }
   .console-container {
-  
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
     height: auto;
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
+    justify-content: center; /* Center horizontally */
+    align-items: center;  /* Center vertically */
     z-index: 1000;
     padding: 20px 0;
   }
   
   .console {
     width: 75%; /* Full width by default */
-    max-width: 400px; /* Limit the maximum width to 600px */
+    max-width: 400px; /* Limit the maximum width to 400px */
     height: 180px; /* Set a fixed height for the console */
     padding: 10px;
-    border: 2px solid #62ff32;
-    border-radius: 8px;
-    background: rgba(0, 0, 0, 0.644);
-    color: #0f0;
+    border: 2px solid transparent;
+    border-radius: 6px;
+    background: rgba(184, 184, 184, 0);
+    color: rgb(255, 255, 255);
     font-family: 'Courier New', monospace;
     display: flex;
     flex-direction: column;
-    backdrop-filter: blur(10px);
-    box-shadow: 0px 0px 20px rgba(0, 255, 0, 0.5);
-    position: fixed; /* add this */
-    bottom: 20px;  /* Space from the bottom of the viewport */
-    left: calc(50% - 200px);  /* Half the viewport width minus half the console's max-width */
-  
-  
+    overflow: hidden; /* Ensure content does not overflow */
+    backdrop-filter: blur(0px);
+    box-shadow: 0px 0px 0px rgb(231, 231, 231);
   }
   
   /* Media Query to adjust the max-width based on screen width */
@@ -410,7 +405,7 @@
     
     /* Style the scrollbar thumb */
     .console-content::-webkit-scrollbar-thumb {
-      background-color: #62ff32;
+      background-color: #bababa;
       border-radius: 0px;
     }
   
@@ -469,9 +464,12 @@
     padding: 0px;
     background: transparent; /* Set background to transparent */
     border: none; /* Remove the border */
-    color: #0f0; /* Set text color to white */
+    color: rgb(255, 255, 255); /* Set text color to white */
     outline: none; /* Remove the default focus outline */
+  
+    /* Glow effect */
   }
+  
   
   /* Optional: Add a placeholder color */
   #commandInput::placeholder {
@@ -484,22 +482,22 @@
     
   }
   .command-link {
-    color: rgb(0, 255, 68);
+    color: rgb(255, 69, 59);
     text-decoration: none; /* this is to remove the default underline of links */
     font-weight: bold;
   
   }
   
   .command-link:hover {
-    color: #15fc00; /* you can adjust this to the hover color you want */
+    color: #efffee; /* you can adjust this to the hover color you want */
   }
   .command-link:visited {
-    color: rgb(167, 0, 0);
+    color: rgb(255, 55, 45);
   }
   
   
   .dir-btn {
-    background-color: rgba(0, 255, 0, 0.2);
+    background-color: rgba(0, 255, 0, 0);
     border: 1px solid #62ff32;
     border-radius: 4px;
     padding: 2px 6px;
@@ -511,7 +509,7 @@
   }
   
   .dir-btn:hover {
-    background-color: rgba(0, 255, 0, 0.4);
+    background-color: rgba(255, 255, 255, 0.4);
   }
   .console-resize-handle {
     position: absolute;

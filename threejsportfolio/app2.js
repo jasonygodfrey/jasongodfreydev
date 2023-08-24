@@ -649,7 +649,7 @@ const contentElement = document.querySelector(".console-content");
 
 document.querySelectorAll(".command-link").forEach((link) => {
   link.addEventListener("click", function (event) {
-    event.preventDefault();
+    
 
     const command = this.textContent.trim();
     executeCommand(command);
