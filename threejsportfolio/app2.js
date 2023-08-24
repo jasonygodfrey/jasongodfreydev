@@ -39,7 +39,7 @@ function addText() {
         // Main title
         const geometryMain = new TextGeometry("JasonGodfrey.dev", {
           font: font,
-          size: 0.8,
+          size: 0.5,
           height: 0,
           curveSegments: 12,
           bevelEnabled: false,
@@ -54,37 +54,44 @@ function addText() {
   
         const materialMain = new MeshBasicMaterial({ color: 0x717171 }); // Platinum black
         textMeshMain = new Mesh(geometryMain, materialMain);
-        textMeshMain.position.set(-14, 5, 20);
+        textMeshMain.position.set(-11.53, 6.4, 20);
         
         scene.add(textMeshMain);
         textMeshMain.rotation.y = Math.PI / 0.100195; // Rotate the text 90 degrees to the right
 
   
-        // Subtitle
-        const geometrySub = new TextGeometry("ジェイソン・ゴッドフリー", {
-            font: font,
-            size: 0.608,
-            height: 0,
-            curveSegments: 12,
-            bevelEnabled: false,
-            bevelThickness: 0.5,
-            bevelSize: 0.3,
-            bevelOffset: 0,
-            bevelSegments: 5,
-            opacity: 1,
-            transparent: true,
-        });
-  
-        const materialSub = new MeshBasicMaterial({ color: 0x717171 });
-        const textMeshSub = new Mesh(geometrySub, materialSub);
-        textMeshSub.position.set(-14, 3.5, 20);; // Positioned below main title
-        scene.add(textMeshSub);
+       // Subtitle
+const subtitleChars = Array.from("ジェイソン・ゴッドフリー");
+const subtitleSpacing = 0.8; // Adjust this value based on desired spacing between characters
+let subtitleYOffset = 2.4;  // Starting position (adjust this if you want to change the subtitle's vertical position)
 
+for (let i = 0; i < subtitleChars.length; i++) {
+    const geometrySub = new TextGeometry(subtitleChars[i], {
+        font: font,
+        size: 0.608,
+        height: 0,
+        curveSegments: 12,
+        bevelEnabled: false,
+        bevelThickness: 0.5,
+        bevelSize: 0.3,
+        bevelOffset: 0,
+        bevelSegments: 5,
+        opacity: 1,
+        transparent: true,
+    });
+
+    const materialSub = new MeshBasicMaterial({ color: 0x717171 });
+    const textMeshSub = new Mesh(geometrySub, materialSub);
+    textMeshSub.position.set(-6, subtitleYOffset + 3.0, 20); // Positioned below main title
+    scene.add(textMeshSub);
+
+    subtitleYOffset -= subtitleSpacing; // Decrease the y offset for each subsequent character
+}
 
 // Logo
 const chars = ["開", "発", "者"];
 const spacing = 6.5; // Adjust this value based on desired spacing between characters
-let yOffset = 2.5;  // Starting position (adjust this if you want to change the logo's vertical position)
+let yOffset = 1.4;  // Starting position (adjust this if you want to change the logo's vertical position)
 
 for (let i = 0; i < chars.length; i++) {
     const geometryLogo = new TextGeometry(chars[i], {
@@ -289,7 +296,7 @@ scene.add(directionalLight);
   loader.load("Dragon.glb", function (gltf) {
     dragon = gltf.scene;
     dragon.scale.set(1, 1, 1);
-    dragon.position.set(0, -20, 0);
+    dragon.position.set(0, -19, 5);
     scene.add(dragon);
     // Make the dragon's skin wireframe
 
@@ -300,7 +307,7 @@ scene.add(directionalLight);
  // Traverse to set dragon's properties and gather its vertices
  dragon.traverse((child) => {
   if (child.isMesh) {
-    child.material.color.set(0x000000); // Set the color to black
+    child.material.color.set(0x151515); // Set the color to black
 
       child.material.wireframe = true;
       child.material.needsUpdate = true;
