@@ -37,7 +37,7 @@ function addText() {
       "./three/examples/fonts/Noto Sans JP_Bold.json",
       function (font) {
         // Main title
-        const geometryMain = new TextGeometry("JasonGodfrey.dev", {
+        const geometryMain = new TextGeometry("JASONGODFREY.DEV", {
           font: font,
           size: 0.5,
           height: 0,
