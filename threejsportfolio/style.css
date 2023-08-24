@@ -533,3 +533,26 @@
     margin: 0 auto;
   
   }
+
+
+  .enter-btn {
+    position: absolute;
+    left: 50%;  /* Center horizontally */
+    bottom: 10%;  /* Position from the bottom */
+    transform: translate(-50%, 0);  /* Correct the position to true center */
+    border: none;  /* Remove border */
+
+    font-size: 24px;  /* Font size for the button */
+    padding: 15px 25px;  /* Padding for the button */
+    color: white;  /* Text color */
+    background-color: rgba(0, 0, 255, 0);  /* Background color */
+    border-radius: 0px;  /* Rounded corners */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);  /* Text shadow for better visibility */
+    cursor: pointer;  /* Cursor style for the button */
+    transition: background-color 0.3s ease;  /* Transition for background color on hover */
+    /* Add more styling as needed */
+  }
+  
+  .enter-btn:hover {
+  }
+  

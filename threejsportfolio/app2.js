@@ -33,6 +33,8 @@ const purpledragonTexture = new THREE.TextureLoader().load(
 );
 
 //text
+let allTextMeshes = []; // Declare at the top-level of your script
+
 function addText() {
   const fontLoader = new FontLoader();
 
@@ -88,7 +90,7 @@ function addText() {
 
         subtitleYOffset -= subtitleSpacing; // Decrease the y offset for each subsequent character
       }
-  // Add "Enter" button
+      // Add "Enter" button
       const enterGeometry = new TextGeometry("Enter", {
         font: font,
         size: 1.0, // Adjust size as needed
@@ -100,7 +102,7 @@ function addText() {
         bevelOffset: 0,
         bevelSegments: 5,
         opacity: 1,
-        transparent: true
+        transparent: true,
       });
 
       const enterMaterial = new MeshBasicMaterial({ color: 0x717171 }); // Same material as other texts
@@ -110,7 +112,7 @@ function addText() {
       // Optional: add some interaction with mouse
       enterMesh.userData = { isButton: true };
 
-      //scene.add(enterMesh); 
+      //scene.add(enterMesh);
 
       // Logo
       const chars = ["開", "発", "者"];
@@ -137,8 +139,11 @@ function addText() {
 
         yOffset -= spacing;
       }
+
     }
+    
   );
+  
 }
 
 //ground
@@ -466,6 +471,12 @@ const orbitRadius = 60;
 const orbitSpeed = 0.005; // Adjust this value for desired speed
 const targetLookAt = new THREE.Vector3(0, -20, 0); // Adjust target position
 
+let fadeOut = false; // Declare at the top-level of your script
+
+function fadeOutText() {
+  fadeOut = true;
+}
+
 function animate() {
   requestAnimationFrame(animate);
 
@@ -527,16 +538,50 @@ function animate() {
       velocities[i] = 0;
     }
   }
+  if (fadeOut) {
+    let allFaded = true;
 
-  
+    for (let i = 0; i < allTextMeshes.length; i++) {
+      if (allTextMeshes[i].material.opacity > 0) {
+        allTextMeshes[i].material.opacity -= 0.01; // Change speed as needed
+        allFaded = false;
+      }
+    }
 
-  
+    if (allFaded) {
+      fadeOut = false; // Reset the flag
+    }
+  }
+
   composer.render();
 }
 
 animate(); // Call this after the init function
 
 // Other Three.js related code...
+
+document.addEventListener("mousedown", onDocumentMouseDown, false);
+function onDocumentMouseDown(event) {
+  console.log("Mouse down event triggered"); // Debug statement
+  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+  raycaster.setFromCamera(mouse, camera);
+  const intersects = raycaster.intersectObjects(allTextMeshes, true);
+  console.log("Intersected objects: ", intersects); // Debug statement
+
+  for (let i = 0; i < intersects.length; i++) {
+    const intersection = intersects[i];
+    const obj = intersection.object;
+    console.log("Intersecting with: ", obj); // Debug statement
+
+    if (obj.userData.isButton) {
+      console.log("Button clicked"); // Debug statement
+      fadeOutText();
+      break;
+    }
+  }
+}
 
 // Add event listeners to the buttons
 document.querySelectorAll(".custom-btn").forEach((button) => {
