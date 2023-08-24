@@ -1,4 +1,3 @@
-
 import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.min.js";
 import { GLTFLoader } from "./three/examples/jsm/loaders/GLTFLoader.js"; // Change this line
 import {
@@ -7,12 +6,12 @@ import {
   MeshBasicMaterial,
   Mesh,
 } from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.module.min.js";
-import { EffectComposer } from './three/examples/jsm/postprocessing/EffectComposer.js';
-import { RenderPass } from './three/examples/jsm/postprocessing/RenderPass.js';
-import { UnrealBloomPass } from './three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import { BokehPass } from './three/examples/jsm/postprocessing/BokehPass.js';
-import { FXAAShader } from './three/examples/jsm/shaders/FXAAShader.js';
-import { ShaderPass } from './three/examples/jsm/postprocessing/ShaderPass.js';
+import { EffectComposer } from "./three/examples/jsm/postprocessing/EffectComposer.js";
+import { RenderPass } from "./three/examples/jsm/postprocessing/RenderPass.js";
+import { UnrealBloomPass } from "./three/examples/jsm/postprocessing/UnrealBloomPass.js";
+import { BokehPass } from "./three/examples/jsm/postprocessing/BokehPass.js";
+import { FXAAShader } from "./three/examples/jsm/shaders/FXAAShader.js";
+import { ShaderPass } from "./three/examples/jsm/postprocessing/ShaderPass.js";
 
 let scene, camera, renderer, dragon, ground, composer; // <-- Added composer here
 let mixers = []; // Declare an array to hold all mixers
@@ -29,49 +28,21 @@ let whiteSquare;
 let circleTexture = new THREE.TextureLoader().load("circle4.png");
 let textMeshMain; // Declare at the top-level of your script
 
-const purpledragonTexture = new THREE.TextureLoader().load("textures/Dragon_ground_color.jpg");
-
+const purpledragonTexture = new THREE.TextureLoader().load(
+  "textures/Dragon_ground_color.jpg"
+);
 
 //text
 function addText() {
-    const fontLoader = new FontLoader();
-  
-    fontLoader.load(
-      "./three/examples/fonts/Noto Sans JP_Bold.json",
-      function (font) {
-        // Main title
-        const geometryMain = new TextGeometry("JASONGODFREY.DEV", {
-          font: font,
-          size: 0.443,
-          height: 0,
-          curveSegments: 12,
-          bevelEnabled: false,
-          bevelThickness: 0.5,
-          bevelSize: 0.3,
-          bevelOffset: 0,
-          bevelSegments: 5,
-          opacity: 1,
-          transparent: true,
-          
-        });
-  
-        const materialMain = new MeshBasicMaterial({ color: 0x717171 }); // Platinum black
-        textMeshMain = new Mesh(geometryMain, materialMain);
-        textMeshMain.position.set(-11.53, 6.4, 20);
-        
-        scene.add(textMeshMain);
-        textMeshMain.rotation.y = Math.PI / 0.100195; // Rotate the text 90 degrees to the right
+  const fontLoader = new FontLoader();
 
-  
-       // Subtitle
-const subtitleChars = Array.from("ジェイソン・ゴッドフリー");
-const subtitleSpacing = 0.8; // Adjust this value based on desired spacing between characters
-let subtitleYOffset = 2.4;  // Starting position (adjust this if you want to change the subtitle's vertical position)
-
-for (let i = 0; i < subtitleChars.length; i++) {
-    const geometrySub = new TextGeometry(subtitleChars[i], {
+  fontLoader.load(
+    "./three/examples/fonts/Noto Sans JP_Bold.json",
+    function (font) {
+      // Main title
+      const geometryMain = new TextGeometry("JASONGODFREY.DEV", {
         font: font,
-        size: 0.608,
+        size: 0.443,
         height: 0,
         curveSegments: 12,
         bevelEnabled: false,
@@ -81,93 +52,141 @@ for (let i = 0; i < subtitleChars.length; i++) {
         bevelSegments: 5,
         opacity: 1,
         transparent: true,
-    });
+      });
 
-    const materialSub = new MeshBasicMaterial({ color: 0x717171 });
-    const textMeshSub = new Mesh(geometrySub, materialSub);
-    textMeshSub.position.set(-6, subtitleYOffset + 3.0, 20); // Positioned below main title
-    scene.add(textMeshSub);
+      const materialMain = new MeshBasicMaterial({ color: 0x717171 }); // Platinum black
+      textMeshMain = new Mesh(geometryMain, materialMain);
+      textMeshMain.position.set(-11.53, 6.4, 20);
 
-    subtitleYOffset -= subtitleSpacing; // Decrease the y offset for each subsequent character
-}
+      scene.add(textMeshMain);
+      textMeshMain.rotation.y = Math.PI / 0.100195; // Rotate the text 90 degrees to the right
 
-// Logo
-const chars = ["開", "発", "者"];
-const spacing = 6.5;
-let yOffset = 1.4;
+      // Subtitle
+      const subtitleChars = Array.from("ジェイソン・ゴッドフリー");
+      const subtitleSpacing = 0.8; // Adjust this value based on desired spacing between characters
+      let subtitleYOffset = 2.4; // Starting position (adjust this if you want to change the subtitle's vertical position)
 
-for (let i = 0; i < chars.length; i++) {
-  const geometryLogo = new THREE.TextGeometry(chars[i], {
-    font: font,
-    size: 4.608,
-    height: 0,
-    curveSegments: 12,
-    bevelEnabled: false
-  });
+      for (let i = 0; i < subtitleChars.length; i++) {
+        const geometrySub = new TextGeometry(subtitleChars[i], {
+          font: font,
+          size: 0.608,
+          height: 0,
+          curveSegments: 12,
+          bevelEnabled: false,
+          bevelThickness: 0.5,
+          bevelSize: 0.3,
+          bevelOffset: 0,
+          bevelSegments: 5,
+          opacity: 1,
+          transparent: true,
+        });
 
-  const materialLogo = new THREE.MeshBasicMaterial({ color: 0xb80000 });
-  const textMeshLogo = new THREE.Mesh(geometryLogo, materialLogo);
-  textMeshLogo.position.set(-12, yOffset, 18);
-  scene.add(textMeshLogo);
+        const materialSub = new MeshBasicMaterial({ color: 0x717171 });
+        const textMeshSub = new Mesh(geometrySub, materialSub);
+        textMeshSub.position.set(-6, subtitleYOffset + 3.0, 20); // Positioned below main title
+        scene.add(textMeshSub);
 
-  // Add the mesh and its initial velocity to arrays
-  //textMeshes.push(textMeshLogo);
-  velocities.push(0);
-
-  yOffset -= spacing;
-}
+        subtitleYOffset -= subtitleSpacing; // Decrease the y offset for each subsequent character
       }
-    );
-  }
-  
-//ground 
+  // Add "Enter" button
+      const enterGeometry = new TextGeometry("Enter", {
+        font: font,
+        size: 1.0, // Adjust size as needed
+        height: 0,
+        curveSegments: 12,
+        bevelEnabled: false,
+        bevelThickness: 0.5,
+        bevelSize: 0.3,
+        bevelOffset: 0,
+        bevelSegments: 5,
+        opacity: 1,
+        transparent: true
+      });
+
+      const enterMaterial = new MeshBasicMaterial({ color: 0x717171 }); // Same material as other texts
+      const enterMesh = new Mesh(enterGeometry, enterMaterial);
+      enterMesh.position.set(-3, -5, 20); // Position it lower down, adjust these values as needed
+
+      // Optional: add some interaction with mouse
+      enterMesh.userData = { isButton: true };
+
+      //scene.add(enterMesh); 
+
+      // Logo
+      const chars = ["開", "発", "者"];
+      const spacing = 6.5;
+      let yOffset = 1.4;
+
+      for (let i = 0; i < chars.length; i++) {
+        const geometryLogo = new THREE.TextGeometry(chars[i], {
+          font: font,
+          size: 4.608,
+          height: 0,
+          curveSegments: 12,
+          bevelEnabled: false,
+        });
+
+        const materialLogo = new THREE.MeshBasicMaterial({ color: 0xb80000 });
+        const textMeshLogo = new THREE.Mesh(geometryLogo, materialLogo);
+        textMeshLogo.position.set(-12, yOffset, 18);
+        scene.add(textMeshLogo);
+
+        // Add the mesh and its initial velocity to arrays
+        //textMeshes.push(textMeshLogo);
+        velocities.push(0);
+
+        yOffset -= spacing;
+      }
+    }
+  );
+}
+
+//ground
 
 const groundGeometry = new THREE.PlaneGeometry(350, 350, 100, 100);
-const groundTexture = new THREE.TextureLoader().load("textures/greenground.png");
-const displacementTexture = new THREE.TextureLoader().load("textures/greengrounddisplacement3.png");
+const groundTexture = new THREE.TextureLoader().load(
+  "textures/greenground.png"
+);
+const displacementTexture = new THREE.TextureLoader().load(
+  "textures/greengrounddisplacement3.png"
+);
 
 groundTexture.wrapS = THREE.RepeatWrapping;
 groundTexture.wrapT = THREE.RepeatWrapping;
-groundTexture.repeat.set(4, 4);  // Adjust the repeat values as needed
+groundTexture.repeat.set(4, 4); // Adjust the repeat values as needed
 const groundMaterial = new THREE.MeshPhongMaterial({
   map: groundTexture,
   displacementMap: displacementTexture,
-  displacementScale: 20,  // Adjust this value as needed
+  displacementScale: 20, // Adjust this value as needed
   transparent: true, // Set to true for transparency
-  opacity: .1, // Adjust this value to control transparency
-  
+  opacity: 0.1, // Adjust this value to control transparency
 });
 
-
-
-
 function fadeInGround() {
-    const duration = 1000; // Fade-in duration in milliseconds (1 second in this case)
-    const start = performance.now();
+  const duration = 1000; // Fade-in duration in milliseconds (1 second in this case)
+  const start = performance.now();
 
-    function animateFadeIn(now) {
-        const elapsed = now - start;
-        if (elapsed < duration) {
-            // Calculate the current opacity
-            ground.material.opacity = (elapsed / duration);
-            requestAnimationFrame(animateFadeIn);
-        } else {
-            ground.material.opacity = 0; // Ensure that the opacity is set to 1 at the end
-        }
-        ground.material.needsUpdate = true;
+  function animateFadeIn(now) {
+    const elapsed = now - start;
+    if (elapsed < duration) {
+      // Calculate the current opacity
+      ground.material.opacity = elapsed / duration;
+      requestAnimationFrame(animateFadeIn);
+    } else {
+      ground.material.opacity = 0; // Ensure that the opacity is set to 1 at the end
     }
+    ground.material.needsUpdate = true;
+  }
 
-    requestAnimationFrame(animateFadeIn);
+  requestAnimationFrame(animateFadeIn);
 }
 
-
-
 function onMouseMove(event) {
-    if (event.touches) {
-        // Use the first touch
-        event.clientX = event.touches[0].clientX;
-        event.clientY = event.touches[0].clientY;
-      }
+  if (event.touches) {
+    // Use the first touch
+    event.clientX = event.touches[0].clientX;
+    event.clientY = event.touches[0].clientY;
+  }
   mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
   mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 }
@@ -175,41 +194,46 @@ function onMouseMove(event) {
 document.addEventListener("mousemove", onMouseMove, false);
 document.addEventListener("touchmove", onMouseMove, false);
 
-
-
-
 const MAX_DISTANCE = 10; // This is the distance up to which particles will surround the dragon
 
 function updateParticles() {
   particleVertices.forEach((vertex, index) => {
-      let direction = vertex.clone().sub(dragon.position).normalize();
-      let distance = vertex.distanceTo(dragon.position);
+    let direction = vertex.clone().sub(dragon.position).normalize();
+    let distance = vertex.distanceTo(dragon.position);
 
-      // If a particle is too far from the dragon, reset its position closer to the dragon
-      if (distance > MAX_DISTANCE) {
-          let offset = direction.multiplyScalar(distance - MAX_DISTANCE);
-          particleVertices[index].sub(offset);
-      } else {
-          // Add a slight random movement to each particle to make the effect more dynamic
-          particleVertices[index].add(new THREE.Vector3((Math.random() - 0.5) * 0.1, (Math.random() - 0.5) * 0.1, (Math.random() - 0.5) * 0.1));
-      }
+    // If a particle is too far from the dragon, reset its position closer to the dragon
+    if (distance > MAX_DISTANCE) {
+      let offset = direction.multiplyScalar(distance - MAX_DISTANCE);
+      particleVertices[index].sub(offset);
+    } else {
+      // Add a slight random movement to each particle to make the effect more dynamic
+      particleVertices[index].add(
+        new THREE.Vector3(
+          (Math.random() - 0.5) * 0.1,
+          (Math.random() - 0.5) * 0.1,
+          (Math.random() - 0.5) * 0.1
+        )
+      );
+    }
   });
 
   // Update the geometry to reflect the new particle positions
   particleGeometry = new THREE.BufferGeometry();
-  particleGeometry.setAttribute('position', new THREE.Float32BufferAttribute(particleVertices, 3));
-  
+  particleGeometry.setAttribute(
+    "position",
+    new THREE.Float32BufferAttribute(particleVertices, 3)
+  );
+
   const particleMaterial = new THREE.PointsMaterial({ size: 0.1 }); // or any other material setup you prefer
   const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
-  
+
   //scene.add(particleSystem);
-  
 }
 
 init();
-
+// Define your clickableObjects array globally or inside your main function
+let clickableObjects = [];
 function init() {
-
   // Create scene and camera
   scene = new THREE.Scene();
   camera = new THREE.PerspectiveCamera(
@@ -218,16 +242,15 @@ function init() {
     0.1,
     3000
   );
-  
+
   // Position the camera for a cinematic angle
   //camera.position.set(0, -10, 69); // Adjust the position as needed
   //camera.lookAt(0, -5, 0); // Look at the origin of the scene
   camera.position.set(-10, -13, 79); // Moved the camera slightly to the left
-camera.lookAt(-4, -5, 0); // Have the camera look slightly to the right
-
+  camera.lookAt(-4, -5, 0); // Have the camera look slightly to the right
 
   // Create a renderer
-  renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });  // Set antialias to false as we will use FXAA later
+  renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true }); // Set antialias to false as we will use FXAA later
 
   renderer.setClearColor(0x000000, 0); // Set clear color to black and clearAlpha to 0
 
@@ -238,23 +261,30 @@ camera.lookAt(-4, -5, 0); // Have the camera look slightly to the right
   composer = new EffectComposer(renderer);
   const renderPass = new RenderPass(scene, camera);
   composer.addPass(renderPass);
-  const bloomPass = new UnrealBloomPass(new THREE.Vector2(window.innerWidth, window.innerHeight), 1.5, 0.4, 0.85);
-bloomPass.threshold = 0.29;
-bloomPass.strength = 1.9;
-bloomPass.radius = 1;
-composer.addPass(bloomPass);
-const bokehPass = new BokehPass(scene, camera, {
-  focus: 1.0,
-  aperture: 0.0025,
-  maxblur: 0.01,
-  width: window.innerWidth,
-  height: window.innerHeight
-});
-composer.addPass(bokehPass);
-const fxaaPass = new ShaderPass(FXAAShader);
-fxaaPass.material.uniforms['resolution'].value.x = 1 / (window.innerWidth * window.devicePixelRatio);
-fxaaPass.material.uniforms['resolution'].value.y = 1 / (window.innerHeight * window.devicePixelRatio);
-composer.addPass(fxaaPass);
+  const bloomPass = new UnrealBloomPass(
+    new THREE.Vector2(window.innerWidth, window.innerHeight),
+    1.5,
+    0.4,
+    0.85
+  );
+  bloomPass.threshold = 0.29;
+  bloomPass.strength = 1.9;
+  bloomPass.radius = 1;
+  composer.addPass(bloomPass);
+  const bokehPass = new BokehPass(scene, camera, {
+    focus: 1.0,
+    aperture: 0.0025,
+    maxblur: 0.01,
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
+  composer.addPass(bokehPass);
+  const fxaaPass = new ShaderPass(FXAAShader);
+  fxaaPass.material.uniforms["resolution"].value.x =
+    1 / (window.innerWidth * window.devicePixelRatio);
+  fxaaPass.material.uniforms["resolution"].value.y =
+    1 / (window.innerHeight * window.devicePixelRatio);
+  composer.addPass(fxaaPass);
 
   // Handle window resizing
   window.addEventListener("resize", function () {
@@ -267,9 +297,11 @@ composer.addPass(fxaaPass);
     renderer.setSize(newWidth, newHeight);
     composer.setSize(newWidth, newHeight);
 
-    fxaaPass.material.uniforms['resolution'].value.x = 1 / (newWidth * window.devicePixelRatio);
-    fxaaPass.material.uniforms['resolution'].value.y = 1 / (newHeight * window.devicePixelRatio);
-});
+    fxaaPass.material.uniforms["resolution"].value.x =
+      1 / (newWidth * window.devicePixelRatio);
+    fxaaPass.material.uniforms["resolution"].value.y =
+      1 / (newHeight * window.devicePixelRatio);
+  });
 
   //mouse
   document.addEventListener("mousemove", onMouseMove, false);
@@ -283,15 +315,12 @@ composer.addPass(fxaaPass);
 
   scene.add(pointLight);
 
-
   const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
-directionalLight.position.set(10, 30, 20); // Adjust position to suit your scene
-directionalLight.castShadow = true;
-scene.add(directionalLight);
-
+  directionalLight.position.set(10, 30, 20); // Adjust position to suit your scene
+  directionalLight.castShadow = true;
+  scene.add(directionalLight);
 
   // Load the dragon.obj model
-
 
   const loader = new GLTFLoader();
   loader.load("Dragon.glb", function (gltf) {
@@ -301,61 +330,61 @@ scene.add(directionalLight);
     scene.add(dragon);
     // Make the dragon's skin wireframe
 
-    
+    // Traverse to set dragon's properties and gather its vertices
+    dragon.traverse((child) => {
+      if (child.isMesh) {
+        child.material.color.set(0x151515); // Set the color to black
 
+        child.material.wireframe = true;
+        child.material.needsUpdate = true;
+        child.castShadow = true;
+        child.receiveShadow = true;
 
-
- // Traverse to set dragon's properties and gather its vertices
- dragon.traverse((child) => {
-  if (child.isMesh) {
-    child.material.color.set(0x151515); // Set the color to black
-
-      child.material.wireframe = true;
-      child.material.needsUpdate = true;
-      child.castShadow = true;
-      child.receiveShadow = true;
-
-      let positions;
-      if (child.geometry.isBufferGeometry) {
+        let positions;
+        if (child.geometry.isBufferGeometry) {
           positions = child.geometry.attributes.position.array;
           for (let i = 0; i < positions.length; i += 3) {
-              particleVertices.push(new THREE.Vector3(positions[i], positions[i + 1], positions[i + 2]));
+            particleVertices.push(
+              new THREE.Vector3(
+                positions[i],
+                positions[i + 1],
+                positions[i + 2]
+              )
+            );
           }
-      } else if (child.geometry.isGeometry) {
+        } else if (child.geometry.isGeometry) {
           particleVertices.push(...child.geometry.vertices);
+        }
       }
-  }
-});
- // Calculate the centroid of the particles
- let centroid = new THREE.Vector3();
- particleVertices.forEach(vertex => {
-     centroid.add(vertex);
- });
- centroid.divideScalar(particleVertices.length);
- // Offset the particles around the dragon
- let offsetDistance = 5;
- for (let i = 0; i < particleVertices.length; i++) {
-     let direction = particleVertices[i].clone().sub(centroid).normalize();
-     particleVertices[i].add(direction.multiplyScalar(offsetDistance));
- }
-
-   
+    });
+    // Calculate the centroid of the particles
+    let centroid = new THREE.Vector3();
+    particleVertices.forEach((vertex) => {
+      centroid.add(vertex);
+    });
+    centroid.divideScalar(particleVertices.length);
+    // Offset the particles around the dragon
+    let offsetDistance = 5;
+    for (let i = 0; i < particleVertices.length; i++) {
+      let direction = particleVertices[i].clone().sub(centroid).normalize();
+      particleVertices[i].add(direction.multiplyScalar(offsetDistance));
+    }
 
     const particleMaterial = new THREE.PointsMaterial({
       color: 0xffffff,
-      size: 1,  // Size of each particle
-      map: new THREE.TextureLoader().load("textures/blue.png"),  // Optional: Use a sprite texture for particles
+      size: 1, // Size of each particle
+      map: new THREE.TextureLoader().load("textures/blue.png"), // Optional: Use a sprite texture for particles
       transparent: true,
       blending: THREE.AdditiveBlending,
-      depthWrite: false
-  });
-  
-  const particleGeometry = new THREE.BufferGeometry().setFromPoints(particleVertices);
-  const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
-//scene.add(particleSystem);
+      depthWrite: false,
+    });
 
+    const particleGeometry = new THREE.BufferGeometry().setFromPoints(
+      particleVertices
+    );
+    const particleSystem = new THREE.Points(particleGeometry, particleMaterial);
+    //scene.add(particleSystem);
 
-    
     // Find and play the 'idle Pose' animation
     const targetAnimationName = "idle Pose";
     let targetAnimationClip;
@@ -382,69 +411,63 @@ scene.add(directionalLight);
     whiteSquare = new THREE.Mesh(circleGeometry, circleMaterial);
     whiteSquare.position.set(dragon.position.x, -20, dragon.position.z);
     whiteSquare.rotation.set(-Math.PI / 2, 0, 0); // Rotate 90 degrees to lie flat
-    
-    scene.add(whiteSquare);
 
+    scene.add(whiteSquare);
   });
 
   ground = new THREE.Mesh(groundGeometry, groundMaterial);
   groundMaterial.needsUpdate = true; // Add this line
 
-ground.rotation.x = -Math.PI / 2;  // Rotate the plane to be horizontal
-ground.visible = false;
-ground.position.set(0, -21, 0); // Adjust as per requirement
+  ground.rotation.x = -Math.PI / 2; // Rotate the plane to be horizontal
+  ground.visible = false;
+  ground.position.set(0, -21, 0); // Adjust as per requirement
 
-ground.receiveShadow = true;  // Optional: Enable if you want the ground to receive shadows
-ground.castShadow = false; // A ground plane typically doesn't need to cast shadows
+  ground.receiveShadow = true; // Optional: Enable if you want the ground to receive shadows
+  ground.castShadow = false; // A ground plane typically doesn't need to cast shadows
 
-console.log(ground.material);
+  console.log(ground.material);
 
-        scene.add(ground); // Add the ground to the scene here
-        ground.visible = true;
-        fadeInGround();
-
+  scene.add(ground); // Add the ground to the scene here
+  ground.visible = true;
+  fadeInGround();
 
   addText();
 
   // ... rest of your code ...
 
- // Skybox
- const skyboxTexture = new THREE.TextureLoader().load('background.jpg');
+  // Skybox
+  const skyboxTexture = new THREE.TextureLoader().load("background.jpg");
 
- // Create the skybox material
- const skyboxMaterial = new THREE.MeshBasicMaterial({
-    color: 0xE5E4E2, // Platinum white color in HEX
-   side: THREE.BackSide, // Make the material visible from the inside
-   transparent: true,  // Set the material to be transparent
-   opacity: 0.327,       // Adjust the opacity as needed
-   
- });
+  // Create the skybox material
+  const skyboxMaterial = new THREE.MeshBasicMaterial({
+    color: 0xe5e4e2, // Platinum white color in HEX
+    side: THREE.BackSide, // Make the material visible from the inside
+    transparent: true, // Set the material to be transparent
+    opacity: 0.327, // Adjust the opacity as needed
+  });
 
- // Create the skybox geometry
- const skyboxGeometry = new THREE.BoxGeometry(1000, 1000, 1000); // Adjust size as needed
+  // Create the skybox geometry
+  const skyboxGeometry = new THREE.BoxGeometry(1000, 1000, 1000); // Adjust size as needed
 
- // Create the skybox mesh
- const skyboxMesh = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
+  // Create the skybox mesh
+  const skyboxMesh = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
 
- // Add the skybox mesh to the scene
- scene.add(skyboxMesh);
- scene.background = new THREE.CubeTexture();
+  // Add the skybox mesh to the scene
+  scene.add(skyboxMesh);
+  scene.background = new THREE.CubeTexture();
 
-    console.log(scene.background)
-    console.log(scene);
-    
-//fog
+  console.log(scene.background);
+  console.log(scene);
 
+  //fog
 }
 // Define parameters for cinematic orbit
 const orbitRadius = 60;
 const orbitSpeed = 0.005; // Adjust this value for desired speed
 const targetLookAt = new THREE.Vector3(0, -20, 0); // Adjust target position
 
-
 function animate() {
   requestAnimationFrame(animate);
-
 
   updateParticles();
 
@@ -465,7 +488,6 @@ function animate() {
         intersection.x - dragon.position.x
       ) -
       Math.PI / 2; // Desired angle (facing the mouse)
-      
 
     // Smoothly interpolate the dragon's current rotation towards the target angle
     const alpha = 0.006; // This determines the speed/smoothness of the rotation. Lower value means smoother.
@@ -486,32 +508,29 @@ function animate() {
     mixer.update(0.0025); // Assuming a 60fps frame rate. Adjust this value if necessary.
   }
 
-
   if (textMeshMain) {
     //textMeshMain.lookAt(camera.position);
-    
     //console.log("Text is facing the camera");
-
-}
-
-
-// Update the y position of the text meshes
-for (let i = 0; i < textMeshes.length; i++) {
-  const acceleration = -0.005;  // Gravity
-
-  // Update velocity and position based on acceleration
-  velocities[i] += acceleration;
-  textMeshes[i].position.y += velocities[i];
-
-  // Reset position and velocity when the text goes too low
-  if (textMeshes[i].position.y < -20) {
-    textMeshes[i].position.y = 20;
-    velocities[i] = 0;
   }
-}
 
+  // Update the y position of the text meshes
+  for (let i = 0; i < textMeshes.length; i++) {
+    const acceleration = -0.005; // Gravity
 
+    // Update velocity and position based on acceleration
+    velocities[i] += acceleration;
+    textMeshes[i].position.y += velocities[i];
 
+    // Reset position and velocity when the text goes too low
+    if (textMeshes[i].position.y < -20) {
+      textMeshes[i].position.y = 20;
+      velocities[i] = 0;
+    }
+  }
+
+  
+
+  
   composer.render();
 }
 
@@ -529,25 +548,20 @@ document.querySelectorAll(".custom-btn").forEach((button) => {
     const WebInfoDiv = document.getElementById("WebDev-info");
     const AboutInfoDiv = document.getElementById("About-info");
 
-
     switch (event.target.innerText) {
       case "About":
         if (dragon) {
           dragon.traverse((child) => {
             if (child.isMesh) {
               child.material.wireframe = false; // Turn off wireframe
-              
             }
           });
         }
-        
+
         contactInfoDiv.style.display = "none"; // Show the contact information
         gameInfoDiv.style.display = "none"; // Show the contact information
         WebInfoDiv.style.display = "none"; // Show the contact information
         AboutInfoDiv.style.display = "block"; // Show the contact information
-
-
-
 
         break;
 
@@ -566,11 +580,11 @@ document.querySelectorAll(".custom-btn").forEach((button) => {
         WebInfoDiv.style.display = "block"; // Show the contact information
         AboutInfoDiv.style.display = "none"; // Show the contact information
         dragon.traverse((child) => {
-            if (child.isMesh) {
-              child.material.map = purpledragonTexture; // Apply the texture
-              child.material.needsUpdate = true; // Necessary after changing a material's properties
-            }
-          });
+          if (child.isMesh) {
+            child.material.map = purpledragonTexture; // Apply the texture
+            child.material.needsUpdate = true; // Necessary after changing a material's properties
+          }
+        });
         break;
       case "Contact":
         gameInfoDiv.style.display = "none"; // Show the contact information
@@ -585,21 +599,20 @@ document.querySelectorAll(".custom-btn").forEach((button) => {
   });
 });
 
+const inputElement = document.getElementById("commandInput");
+const contentElement = document.querySelector(".console-content");
 
-const inputElement = document.getElementById('commandInput');
-const contentElement = document.querySelector('.console-content');
-
-document.querySelectorAll('.command-link').forEach(link => {
-  link.addEventListener('click', function(event) {
+document.querySelectorAll(".command-link").forEach((link) => {
+  link.addEventListener("click", function (event) {
     event.preventDefault();
-    
+
     const command = this.textContent.trim();
     executeCommand(command);
   });
 });
 
-inputElement.addEventListener('keydown', (event) => {
-  if (event.key === 'Enter') {
+inputElement.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
     const inputText = inputElement.value.trim();
     executeCommand(inputText);
     event.preventDefault();
@@ -607,15 +620,15 @@ inputElement.addEventListener('keydown', (event) => {
 });
 
 function executeCommand(command) {
-  if (command !== '') {
-    const outputLine = document.createElement('p');
-    outputLine.className = 'console-line';
+  if (command !== "") {
+    const outputLine = document.createElement("p");
+    outputLine.className = "console-line";
 
-    const promptSpan = document.createElement('span');
-    promptSpan.textContent = '> ';
+    const promptSpan = document.createElement("span");
+    promptSpan.textContent = "> ";
     outputLine.appendChild(promptSpan);
 
-    const commandSpan = document.createElement('span');
+    const commandSpan = document.createElement("span");
     commandSpan.textContent = command;
     outputLine.appendChild(commandSpan);
 
@@ -624,13 +637,11 @@ function executeCommand(command) {
     // Scroll the console content to the bottom
     contentElement.scrollTop = contentElement.scrollHeight;
 
-    inputElement.value = '';
+    inputElement.value = "";
   }
 }
 
-
-
-document.querySelector('.dir-btn').addEventListener('click', function() {
+document.querySelector(".dir-btn").addEventListener("click", function () {
   const directoryContent = `
       <p class="console-line">//Directory:</p>
       <p class="console-line"><a href="#" class="command-link">*ABOUT ｜ について</a></p>
@@ -643,8 +654,8 @@ document.querySelector('.dir-btn').addEventListener('click', function() {
   contentElement.scrollTop = contentElement.scrollHeight;
 
   // Re-bind the click event to new command-links
-  document.querySelectorAll('.command-link').forEach(link => {
-    link.addEventListener('click', function(event) {
+  document.querySelectorAll(".command-link").forEach((link) => {
+    link.addEventListener("click", function (event) {
       event.preventDefault();
       const command = this.textContent.trim();
       executeCommand(command);
@@ -652,25 +663,24 @@ document.querySelector('.dir-btn').addEventListener('click', function() {
   });
 });
 
-
-const consoleElement = document.querySelector('.console');
-const resizeHandle = document.querySelector('.console-resize-handle');
+const consoleElement = document.querySelector(".console");
+const resizeHandle = document.querySelector(".console-resize-handle");
 
 let isResizing = false;
 
 let initialWidth, initialHeight, initialMouseX, initialMouseY;
 
-resizeHandle.addEventListener('mousedown', (event) => {
+resizeHandle.addEventListener("mousedown", (event) => {
   isResizing = true;
   initialWidth = consoleElement.offsetWidth;
   initialHeight = consoleElement.offsetHeight;
   initialMouseX = event.clientX;
   initialMouseY = event.clientY;
 
-  document.addEventListener('mousemove', handleMouseMove);
-  document.addEventListener('mouseup', () => {
+  document.addEventListener("mousemove", handleMouseMove);
+  document.addEventListener("mouseup", () => {
     isResizing = false;
-    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener("mousemove", handleMouseMove);
   });
 });
 
@@ -690,23 +700,20 @@ function handleMouseMove(event) {
   consoleElement.style.height = `${newHeight}px`;
 }
 
-
-
-
-const dragBar = document.querySelector('.console-drag-bar');
+const dragBar = document.querySelector(".console-drag-bar");
 
 let isDragging = false;
 let prevX, prevY;
 
-dragBar.addEventListener('mousedown', (event) => {
+dragBar.addEventListener("mousedown", (event) => {
   isDragging = true;
   prevX = event.clientX;
   prevY = event.clientY;
 
-  document.addEventListener('mousemove', handleDragMove);
-  document.addEventListener('mouseup', () => {
+  document.addEventListener("mousemove", handleDragMove);
+  document.addEventListener("mouseup", () => {
     isDragging = false;
-    document.removeEventListener('mousemove', handleDragMove);
+    document.removeEventListener("mousemove", handleDragMove);
   });
 });
 
@@ -716,7 +723,10 @@ function handleDragMove(event) {
   const dx = event.clientX - prevX;
   const dy = event.clientY - prevY;
 
-  const currentLeft = parseInt(window.getComputedStyle(consoleElement).left, 10);
+  const currentLeft = parseInt(
+    window.getComputedStyle(consoleElement).left,
+    10
+  );
   const currentTop = parseInt(window.getComputedStyle(consoleElement).top, 10);
 
   consoleElement.style.left = `${currentLeft + dx}px`;
