@@ -248,6 +248,17 @@ function init() {
     3000
   );
 
+    // Create a loading manager instance
+    const manager = new THREE.LoadingManager();
+    let itemsToLoad = 10; // Set this to the number of items you're loading
+    let itemsLoaded = 0;
+  
+    manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+      let loadPercentageElement = document.getElementById('loadPercentage');
+      let percentage = (itemsLoaded / itemsTotal) * 100;
+      loadPercentageElement.innerText = `${Math.round(percentage)}%`;
+    };
+
   // Position the camera for a cinematic angle
   //camera.position.set(0, -10, 69); // Adjust the position as needed
   //camera.lookAt(0, -5, 0); // Look at the origin of the scene
@@ -327,7 +338,7 @@ function init() {
 
   // Load the dragon.obj model
 
-  const loader = new GLTFLoader();
+  const loader = new GLTFLoader(manager);
   loader.load("Dragon.glb", function (gltf) {
     dragon = gltf.scene;
     dragon.scale.set(1, 1, 1);
