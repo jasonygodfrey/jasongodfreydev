@@ -389,7 +389,7 @@ function init() {
     const particleMaterial = new THREE.PointsMaterial({
       color: 0xffffff,
       size: 1, // Size of each particle
-      map: new THREE.TextureLoader().load("textures/blue.png"), // Optional: Use a sprite texture for particles
+      map: new THREE.TextureLoader(manager).load("textures/blue.png"), // Optional: Use a sprite texture for particles
       transparent: true,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
