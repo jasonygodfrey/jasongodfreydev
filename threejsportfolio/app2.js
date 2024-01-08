@@ -432,6 +432,19 @@ function init() {
     whiteSquare.rotation.set(-Math.PI / 2, 0, 0); // Rotate 90 degrees to lie flat
 
     scene.add(whiteSquare);
+
+    // Add event listener to the button
+document.getElementById('blackSkinButton').addEventListener('click', function() {
+  if (dragon) {
+    dragon.traverse(function(child) {
+      if (child.isMesh) {
+        // Change the material color to black
+        child.material.color.set(0x000000); // Black color in hexadecimal
+        child.material.needsUpdate = true;
+      }
+    });
+  }
+});
   });
 
   ground = new THREE.Mesh(groundGeometry, groundMaterial);
@@ -794,3 +807,5 @@ function handleDragMove(event) {
   prevX = event.clientX;
   prevY = event.clientY;
 }
+
+
