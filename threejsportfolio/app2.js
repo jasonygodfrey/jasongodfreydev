@@ -337,6 +337,7 @@ function init() {
   scene.add(directionalLight);
 
   // Load the dragon.obj model
+  const dragonTexture = new THREE.TextureLoader().load('textures/Dragon_ground_color.jpg');
 
   const loader = new GLTFLoader(manager);
   loader.load("Dragon.glb", function (gltf) {
@@ -349,7 +350,9 @@ function init() {
     // Traverse to set dragon's properties and gather its vertices
     dragon.traverse((child) => {
       if (child.isMesh) {
-        child.material.color.set(0x151515); // Set the color to black
+        child.material.map = dragonTexture; // Apply the loaded texture
+        child.material.needsUpdate = true; // Update the material
+        //child.material.color.set(0x151515); // Set the color to black
 
         child.material.wireframe = true;
         child.material.needsUpdate = true;
