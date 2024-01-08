@@ -337,6 +337,7 @@ function init() {
   scene.add(directionalLight);
 
   // Load the dragon.obj model
+  const dragonTexture = new THREE.TextureLoader().load('textures/Dragon_ground_color.jpg');
 
   const loader = new GLTFLoader(manager);
   loader.load("Dragon.glb", function (gltf) {
@@ -349,7 +350,9 @@ function init() {
     // Traverse to set dragon's properties and gather its vertices
     dragon.traverse((child) => {
       if (child.isMesh) {
-        child.material.color.set(0x151515); // Set the color to black
+        child.material.map = dragonTexture; // Apply the loaded texture
+        child.material.needsUpdate = true; // Update the material
+        //child.material.color.set(0x151515); // Set the color to black
 
         child.material.wireframe = true;
         child.material.needsUpdate = true;
@@ -429,6 +432,19 @@ function init() {
     whiteSquare.rotation.set(-Math.PI / 2, 0, 0); // Rotate 90 degrees to lie flat
 
     scene.add(whiteSquare);
+
+    // Add event listener to the button
+document.getElementById('blackSkinButton').addEventListener('click', function() {
+  if (dragon) {
+    dragon.traverse(function(child) {
+      if (child.isMesh) {
+        // Change the material color to black
+        child.material.color.set(0x000000); // Black color in hexadecimal
+        child.material.needsUpdate = true;
+      }
+    });
+  }
+});
   });
 
   ground = new THREE.Mesh(groundGeometry, groundMaterial);
@@ -791,3 +807,5 @@ function handleDragMove(event) {
   prevX = event.clientX;
   prevY = event.clientY;
 }
+
+
