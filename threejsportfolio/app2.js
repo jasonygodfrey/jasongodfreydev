@@ -12,6 +12,8 @@ import { UnrealBloomPass } from "./three/examples/jsm/postprocessing/UnrealBloom
 import { BokehPass } from "./three/examples/jsm/postprocessing/BokehPass.js";
 import { FXAAShader } from "./three/examples/jsm/shaders/FXAAShader.js";
 import { ShaderPass } from "./three/examples/jsm/postprocessing/ShaderPass.js";
+import { FBXLoader } from "./three/examples/jsm/loaders/FBXLoader.js"; // Change this line to import FBXLoader
+
 
 let scene, camera, renderer, dragon, ground, composer; // <-- Added composer here
 let mixers = []; // Declare an array to hold all mixers
@@ -86,7 +88,7 @@ function addText() {
         const materialSub = new MeshBasicMaterial({ color: 0x717171 });
         const textMeshSub = new Mesh(geometrySub, materialSub);
         textMeshSub.position.set(-6, subtitleYOffset + 3.0, 20); // Positioned below main title
-        scene.add(textMeshSub);
+        //scene.add(textMeshSub);
 
         subtitleYOffset -= subtitleSpacing; // Decrease the y offset for each subsequent character
       }
@@ -131,7 +133,7 @@ function addText() {
         const materialLogo = new THREE.MeshBasicMaterial({ color: 0xb80000 });
         const textMeshLogo = new THREE.Mesh(geometryLogo, materialLogo);
         textMeshLogo.position.set(-12, yOffset, 18);
-        scene.add(textMeshLogo);
+        //scene.add(textMeshLogo);
 
         // Add the mesh and its initial velocity to arrays
         //textMeshes.push(textMeshLogo);
@@ -141,9 +143,9 @@ function addText() {
       }
 
     }
-    
+
   );
-  
+
 }
 
 //ground
@@ -178,7 +180,7 @@ function fadeInGround() {
       ground.material.opacity = elapsed / duration;
       requestAnimationFrame(animateFadeIn);
     } else {
-      ground.material.opacity = 0; // Ensure that the opacity is set to 1 at the end
+      ground.material.opacity = 1; // Ensure that the opacity is set to 1 at the end
     }
     ground.material.needsUpdate = true;
   }
@@ -248,16 +250,16 @@ function init() {
     3000
   );
 
-    // Create a loading manager instance
-    const manager = new THREE.LoadingManager();
-    let itemsToLoad = 10; // Set this to the number of items you're loading
-    let itemsLoaded = 0;
-  
-    manager.onProgress = (url, itemsLoaded, itemsTotal) => {
-      let loadPercentageElement = document.getElementById('loadPercentage');
-      let percentage = (itemsLoaded / itemsTotal) * 100;
-      loadPercentageElement.innerText = `${Math.round(percentage)}%`;
-    };
+  // Create a loading manager instance
+  const manager = new THREE.LoadingManager();
+  let itemsToLoad = 10; // Set this to the number of items you're loading
+  let itemsLoaded = 0;
+
+  manager.onProgress = (url, itemsLoaded, itemsTotal) => {
+    let loadPercentageElement = document.getElementById('loadPercentage');
+    let percentage = (itemsLoaded / itemsTotal) * 100;
+    loadPercentageElement.innerText = `${Math.round(percentage)}%`;
+  };
 
   // Position the camera for a cinematic angle
   //camera.position.set(0, -10, 69); // Adjust the position as needed
@@ -283,8 +285,8 @@ function init() {
     0.4,
     0.85
   );
-  bloomPass.threshold = 0.29;
-  bloomPass.strength = 1.9;
+  bloomPass.threshold = 0.6;
+  bloomPass.strength = 1.0;
   bloomPass.radius = 1;
   composer.addPass(bloomPass);
   const bokehPass = new BokehPass(scene, camera, {
@@ -344,7 +346,7 @@ function init() {
     dragon = gltf.scene;
     dragon.scale.set(1, 1, 1);
     dragon.position.set(0, -19, 5);
-    scene.add(dragon);
+    // scene.add(dragon);
     // Make the dragon's skin wireframe
 
     // Traverse to set dragon's properties and gather its vertices
@@ -376,6 +378,56 @@ function init() {
         }
       }
     });
+
+    let smaug, smaugMixer;
+    const smaugAnimations = {};
+
+    function loadSmaugModelAndAnimations() {
+      const smaugLoader = new FBXLoader();
+    
+      smaugLoader.load('smaug/fbx/smaug_01.FBX', function(object) {
+        smaug = object;
+        smaug.scale.set(7, 7, 7);
+        smaug.position.set(0, -19, 5);
+    
+        const smaugTexture = new THREE.TextureLoader().load('smaug/texture/smaug_01.png');
+        smaug.traverse(function(child) {
+          if (child.isMesh) {
+            child.material.map = smaugTexture;
+          }
+        });
+    
+        scene.add(smaug);
+    
+        smaugMixer = new THREE.AnimationMixer(smaug);
+        mixers.push(smaugMixer);
+    
+        // Load animations
+        loadSmaugAnimation('smaug/fbx/smaug_idle_01.FBX', 'idle', function() {
+          playAnimation('idle');
+        });
+        // ... [other animations] ...
+      });
+    }
+
+    function loadSmaugAnimation(path, name, callback) {
+      const loader = new FBXLoader();
+      loader.load(path, function(object) {
+        smaugAnimations[name] = object.animations[0];
+        if (callback) callback();
+      });
+    }
+    function playAnimation(animationName) {
+      if (smaugMixer && smaugAnimations[animationName]) {
+        const action = smaugMixer.clipAction(smaugAnimations[animationName]);
+        action.play();
+      }
+    }
+    
+    loadSmaugModelAndAnimations();
+    playAnimation('idle');
+
+
     // Calculate the centroid of the particles
     let centroid = new THREE.Vector3();
     particleVertices.forEach((vertex) => {
@@ -434,17 +486,17 @@ function init() {
     scene.add(whiteSquare);
 
     // Add event listener to the button
-document.getElementById('blackSkinButton').addEventListener('click', function() {
-  if (dragon) {
-    dragon.traverse(function(child) {
-      if (child.isMesh) {
-        // Change the material color to black
-        child.material.color.set(0x000000); // Black color in hexadecimal
-        child.material.needsUpdate = true;
+    document.getElementById('blackSkinButton').addEventListener('click', function () {
+      if (dragon) {
+        dragon.traverse(function (child) {
+          if (child.isMesh) {
+            // Change the material color to black
+            child.material.color.set(0x000000); // Black color in hexadecimal
+            child.material.needsUpdate = true;
+          }
+        });
       }
     });
-  }
-});
   });
 
   ground = new THREE.Mesh(groundGeometry, groundMaterial);
@@ -503,10 +555,18 @@ let fadeOut = false; // Declare at the top-level of your script
 function fadeOutText() {
   fadeOut = true;
 }
+let clock = new THREE.Clock();
 
 function animate() {
+
   requestAnimationFrame(animate);
 
+  const delta = clock.getDelta();
+
+  mixers.forEach((mixer) => {
+    mixer.update(delta);
+  });
+ 
   updateParticles();
 
   // Update the picking ray with the camera and mouse position
@@ -676,7 +736,7 @@ const contentElement = document.querySelector(".console-content");
 
 document.querySelectorAll(".command-link").forEach((link) => {
   link.addEventListener("click", function (event) {
-    
+
 
     const command = this.textContent.trim();
     executeCommand(command);
