@@ -299,7 +299,7 @@ function init() {
   // Position the camera for a cinematic angle
   //camera.position.set(0, -10, 69); // Adjust the position as needed
   //camera.lookAt(0, -5, 0); // Look at the origin of the scene
-  camera.position.set(380, 213, -579); // Moved the camera slightly to the left
+  camera.position.set(480, 213, -579); // Moved the camera slightly to the left
   
  // camera.lookAt(10000, 50013, 80000);
  camera.rotation.x -= Math.PI / 4; // Rotates the camera 30 degrees upwards
@@ -426,8 +426,9 @@ function init() {
     
       smaugLoader.load('smaug/fbx/smaug_01.FBX', function(object) {
         smaug = object;
-        smaug.scale.set(7, 7, 7);
-        smaug.position.set(200, 200, 200);
+        smaug.scale.set(10, 10, 10);
+        smaug.position.set(240, 130, -280);
+        smaug.rotation.y = 272.5;
     
         const smaugTexture = new THREE.TextureLoader().load('smaug/texture/smaug_01.png');
         smaug.traverse(function(child) {
@@ -444,7 +445,7 @@ function init() {
     loader.load('fonts/helvetiker_regular.typeface.json', function(font) {
       const geometry = new THREE.TextGeometry('JASONGODFREY.DEV', {
         font: font,
-        size: 16,
+        size: 7,
         height: 1,
         curveSegments: 12,
         bevelEnabled: true,
@@ -454,7 +455,7 @@ function init() {
       });
       const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
       const textMesh = new THREE.Mesh(geometry, material);
-      textMesh.position.set(smaug.position.x, smaug.position.y + 80, smaug.position.z);
+      textMesh.position.set(smaug.position.x + 40, smaug.position.y + 30, smaug.position.z);
       // Set the rotation of the text mesh (in radians)
 //textMesh.rotation.x = Math.PI / 2; // Rotate around the x-axis by 90 degrees
 textMesh.rotation.y = 160; // No rotation around the y-axis
@@ -644,7 +645,7 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update();
   renderer.render(scene, camera);
-  controls.target.set(160, 183, -179);
+  controls.target.set(160, 164, -179);
 
   const delta = clock.getDelta();
 
