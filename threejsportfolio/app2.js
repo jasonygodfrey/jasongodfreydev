@@ -424,7 +424,7 @@ function init() {
     function loadSmaugModelAndAnimations() {
       const smaugLoader = new FBXLoader();
     
-      smaugLoader.load('smaug/fbx/smaug_01.FBX', function(object) {
+      smaugLoader.load('smaug/Fbx/smaug_01.FBX', function(object) {
         smaug = object;
         smaug.scale.set(10, 10, 10);
         smaug.position.set(240, 130, -280);
