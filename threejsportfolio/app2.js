@@ -13,6 +13,7 @@ import { BokehPass } from "./three/examples/jsm/postprocessing/BokehPass.js";
 import { FXAAShader } from "./three/examples/jsm/shaders/FXAAShader.js";
 import { ShaderPass } from "./three/examples/jsm/postprocessing/ShaderPass.js";
 import { FBXLoader } from "./three/examples/jsm/loaders/FBXLoader.js"; // Change this line to import FBXLoader
+import { OrbitControls } from './three/examples/jsm/controls/OrbitControls.js';
 
 
 let scene, camera, renderer, dragon, ground, composer; // <-- Added composer here
@@ -29,6 +30,9 @@ let radius = 20; // Define the radius of the circular path
 let whiteSquare;
 let circleTexture = new THREE.TextureLoader().load("circle4.png");
 let textMeshMain; // Declare at the top-level of your script
+let smaugMixer; // Add this line to declare smaugMixer globally
+let controls;
+
 
 const purpledragonTexture = new THREE.TextureLoader().load(
   "textures/Dragon_ground_color.jpg"
@@ -43,27 +47,26 @@ function addText() {
   fontLoader.load(
     "./three/examples/fonts/Noto Sans JP_Bold.json",
     function (font) {
-      // Main title
-      const geometryMain = new TextGeometry("JASONGODFREY.DEV", {
-        font: font,
-        size: 0.443,
-        height: 0,
-        curveSegments: 12,
-        bevelEnabled: false,
-        bevelThickness: 0.5,
-        bevelSize: 0.3,
-        bevelOffset: 0,
-        bevelSegments: 5,
-        opacity: 1,
-        transparent: true,
-      });
+// Increase the size of the text
+const geometryMain = new TextGeometry("JASONGODFREY.DEV", {
+  font: font,
+  size: 99, // Increase the size
+  height: 1,
+});
 
-      const materialMain = new MeshBasicMaterial({ color: 0x717171 }); // Platinum black
+// Use a different color for the material
+const materialMain = new MeshBasicMaterial({ color: 0xffffff }); // White color
+
+
+
+// Reduce the camera's near clipping plane
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0, 1000);
       textMeshMain = new Mesh(geometryMain, materialMain);
-      textMeshMain.position.set(-11.53, 6.4, 20);
+      textMeshMain.position.set(-10, 513, 79);
 
       scene.add(textMeshMain);
-      textMeshMain.rotation.y = Math.PI / 0.100195; // Rotate the text 90 degrees to the right
+
+     // textMeshMain.rotation.y = Math.PI / 0.100195; // Rotate the text 90 degrees to the right
 
       // Subtitle
       const subtitleChars = Array.from("ジェイソン・ゴッドフリー");
@@ -148,6 +151,36 @@ function addText() {
 
 }
 
+
+//keep enviroment
+function loadGLTFScene() {
+  const gltfLoader = new GLTFLoader();
+  gltfLoader.load('keep/scene.gltf', function (gltf) {
+    // Assuming you want to add the entire glTF scene
+    const model = gltf.scene;
+    model.traverse((object) => {
+      if (object.isMesh) {
+        object.material.depthTest = true;
+        object.material.depthWrite = true;
+      }
+    });
+    
+    // You can set the position, rotation, scale as needed
+    model.position.set(0, 0, 0);
+    model.rotation.set(0, 0, 0);
+    model.scale.set(1, 1, 1);
+
+    
+
+    // Finally, add it to your existing scene
+    scene.add(model);
+  }, undefined, function (error) {
+    console.error('An error occurred loading the GLTF model:', error);
+  });
+}
+
+
+
 //ground
 
 const groundGeometry = new THREE.PlaneGeometry(350, 350, 100, 100);
@@ -166,7 +199,7 @@ const groundMaterial = new THREE.MeshPhongMaterial({
   displacementMap: displacementTexture,
   displacementScale: 20, // Adjust this value as needed
   transparent: true, // Set to true for transparency
-  opacity: 0.1, // Adjust this value to control transparency
+  opacity: 0, // Adjust this value to control transparency
 });
 
 function fadeInGround() {
@@ -247,8 +280,10 @@ function init() {
     30, // Adjust the field of view for a cinematic effect
     window.innerWidth / window.innerHeight,
     0.1,
-    3000
+    1800
   );
+  renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
+
 
   // Create a loading manager instance
   const manager = new THREE.LoadingManager();
@@ -264,11 +299,12 @@ function init() {
   // Position the camera for a cinematic angle
   //camera.position.set(0, -10, 69); // Adjust the position as needed
   //camera.lookAt(0, -5, 0); // Look at the origin of the scene
-  camera.position.set(-10, -13, 79); // Moved the camera slightly to the left
-  camera.lookAt(-4, -5, 0); // Have the camera look slightly to the right
-
-  // Create a renderer
-  renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true }); // Set antialias to false as we will use FXAA later
+  camera.position.set(380, 213, -579); // Moved the camera slightly to the left
+  
+ // camera.lookAt(10000, 50013, 80000);
+ camera.rotation.x -= Math.PI / 4; // Rotates the camera 30 degrees upwards
+  // Create a render
+  renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); // Set antialias to false as we will use FXAA later
 
   renderer.setClearColor(0x000000, 0); // Set clear color to black and clearAlpha to 0
 
@@ -286,7 +322,7 @@ function init() {
     0.85
   );
   bloomPass.threshold = 0.6;
-  bloomPass.strength = 1.0;
+  bloomPass.strength = 0.5;
   bloomPass.radius = 1;
   composer.addPass(bloomPass);
   const bokehPass = new BokehPass(scene, camera, {
@@ -379,6 +415,9 @@ function init() {
       }
     });
 
+    loadGLTFScene();  // This will load your GLTF scene
+
+
     let smaug, smaugMixer;
     const smaugAnimations = {};
 
@@ -388,7 +427,7 @@ function init() {
       smaugLoader.load('smaug/fbx/smaug_01.FBX', function(object) {
         smaug = object;
         smaug.scale.set(7, 7, 7);
-        smaug.position.set(0, -19, 5);
+        smaug.position.set(200, 200, 200);
     
         const smaugTexture = new THREE.TextureLoader().load('smaug/texture/smaug_01.png');
         smaug.traverse(function(child) {
@@ -398,8 +437,34 @@ function init() {
         });
     
         scene.add(smaug);
+
+        
+    // Add the text after the smaug model is loaded
+    const loader = new THREE.FontLoader();
+    loader.load('fonts/helvetiker_regular.typeface.json', function(font) {
+      const geometry = new THREE.TextGeometry('JASONGODFREY.DEV', {
+        font: font,
+        size: 16,
+        height: 1,
+        curveSegments: 12,
+        bevelEnabled: true,
+        bevelThickness: 0.15,
+        bevelSize: 0.3,
+        bevelSegments: 5
+      });
+      const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+      const textMesh = new THREE.Mesh(geometry, material);
+      textMesh.position.set(smaug.position.x, smaug.position.y + 80, smaug.position.z);
+      // Set the rotation of the text mesh (in radians)
+//textMesh.rotation.x = Math.PI / 2; // Rotate around the x-axis by 90 degrees
+textMesh.rotation.y = 160; // No rotation around the y-axis
+textMesh.rotation.z = 0; // No rotation around the z-axis
+
+      scene.add(textMesh);
+    });
     
         smaugMixer = new THREE.AnimationMixer(smaug);
+        smaugMixer.timeScale = 0.6; // Set this for half speed. Adjust as needed.
         mixers.push(smaugMixer);
     
         // Load animations
@@ -426,6 +491,12 @@ function init() {
     
     loadSmaugModelAndAnimations();
     playAnimation('idle');
+
+
+
+
+
+
 
 
     // Calculate the centroid of the particles
@@ -483,7 +554,7 @@ function init() {
     whiteSquare.position.set(dragon.position.x, -20, dragon.position.z);
     whiteSquare.rotation.set(-Math.PI / 2, 0, 0); // Rotate 90 degrees to lie flat
 
-    scene.add(whiteSquare);
+   // scene.add(whiteSquare);
 
     // Add event listener to the button
     document.getElementById('blackSkinButton').addEventListener('click', function () {
@@ -511,11 +582,11 @@ function init() {
 
   console.log(ground.material);
 
-  scene.add(ground); // Add the ground to the scene here
-  ground.visible = true;
-  fadeInGround();
+  //scene.add(ground); // Add the ground to the scene here
+  ground.visible = false;
+  //fadeInGround();
 
-  addText();
+  //addText();
 
   // ... rest of your code ...
 
@@ -527,28 +598,39 @@ function init() {
     color: 0xe5e4e2, // Platinum white color in HEX
     side: THREE.BackSide, // Make the material visible from the inside
     transparent: true, // Set the material to be transparent
-    opacity: 0.327, // Adjust the opacity as needed
+    opacity: 0, // Adjust the opacity as needed
   });
 
   // Create the skybox geometry
-  const skyboxGeometry = new THREE.BoxGeometry(1000, 1000, 1000); // Adjust size as needed
+  const skyboxGeometry = new THREE.BoxGeometry(1, 1, 1); // Adjust size as needed
 
   // Create the skybox mesh
   const skyboxMesh = new THREE.Mesh(skyboxGeometry, skyboxMaterial);
 
   // Add the skybox mesh to the scene
-  scene.add(skyboxMesh);
-  scene.background = new THREE.CubeTexture();
+  //scene.add(skyboxMesh);
+  //scene.background = new THREE.CubeTexture();
+  skyboxMaterial.depthWrite = false;
 
   console.log(scene.background);
   console.log(scene);
 
   //fog
+
+  
+  controls = new OrbitControls(camera, renderer.domElement);
+
+  // You can adjust these settings based on your needs
+  controls.minDistance = 10; // Minimum distance for zooming in
+  controls.maxDistance = 500; // Maximum distance for zooming out
+  controls.enablePan = true; // Enable panning
+  controls.enableDamping = true; // Enable damping (inertia), which can create a smooth experience
+  controls.dampingFactor = 0.05;
 }
 // Define parameters for cinematic orbit
 const orbitRadius = 60;
 const orbitSpeed = 0.005; // Adjust this value for desired speed
-const targetLookAt = new THREE.Vector3(0, -20, 0); // Adjust target position
+//const targetLookAt = new THREE.Vector3(0, -20, 0); // Adjust target position
 
 let fadeOut = false; // Declare at the top-level of your script
 
@@ -560,14 +642,25 @@ let clock = new THREE.Clock();
 function animate() {
 
   requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+  controls.target.set(160, 183, -179);
 
   const delta = clock.getDelta();
 
-  mixers.forEach((mixer) => {
+
+
+   // Update all mixers
+   mixers.forEach((mixer) => {
     mixer.update(delta);
   });
- 
-  updateParticles();
+
+
+  //updateParticles();
+
+
+
+
 
   // Update the picking ray with the camera and mouse position
   raycaster.setFromCamera(mouse, camera);
@@ -576,6 +669,8 @@ function animate() {
   const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
   const intersection = new THREE.Vector3();
   raycaster.ray.intersectPlane(plane, intersection);
+
+
 
   // Rotate the dragon to face the intersection point
   if (dragon) {
