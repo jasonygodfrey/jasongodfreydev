@@ -430,7 +430,7 @@ function init() {
         smaug.position.set(240, 130, -280);
         smaug.rotation.y = 272.5;
     
-        const smaugTexture = new THREE.TextureLoader().load('smaug/texture/smaug_01.png');
+        const smaugTexture = new THREE.TextureLoader().load('smaug/Texture/smaug_01.png');
         smaug.traverse(function(child) {
           if (child.isMesh) {
             child.material.map = smaugTexture;
@@ -469,7 +469,7 @@ textMesh.rotation.z = 0; // No rotation around the z-axis
         mixers.push(smaugMixer);
     
         // Load animations
-        loadSmaugAnimation('smaug/fbx/smaug_idle_01.FBX', 'idle', function() {
+        loadSmaugAnimation('smaug/Fbx/smaug_idle_01.FBX', 'idle', function() {
           playAnimation('idle');
         });
         // ... [other animations] ...
