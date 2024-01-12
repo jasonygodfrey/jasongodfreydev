@@ -977,3 +977,23 @@ function init() {
   }
 
 }
+function setupButton() {
+  const secondSceneButton = document.getElementById('secondSceneButton');
+  if (secondSceneButton) {
+      console.log('Found the button'); // Debugging line
+      secondSceneButton.addEventListener('click', () => {
+          console.log('Button clicked'); // Debugging line
+          let script = document.createElement('script');
+          script.src = 'app3.js'; // Replace with the actual path to app3.js
+          document.body.appendChild(script);
+      });
+  } else {
+      console.log('Did not find the button'); // Debugging line
+  }
+}
+
+if (document.readyState === 'loading') {  // If document is still loading, wait for it to complete
+  document.addEventListener('DOMContentLoaded', setupButton);
+} else {  // Otherwise, run setupButton() now
+  setupButton();
+}
