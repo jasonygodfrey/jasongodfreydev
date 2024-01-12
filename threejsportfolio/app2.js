@@ -323,7 +323,6 @@ function init() {
     controls = new OrbitControls(camera, renderer.domElement);
   }
 
-
   composer = new EffectComposer(renderer);
   const renderPass = new RenderPass(scene, camera);
   composer.addPass(renderPass);
@@ -663,9 +662,10 @@ let clock = new THREE.Clock();
 function animate() {
 
   requestAnimationFrame(animate);
-  controls.update();
-  
+    
   if (controls) controls.update();
+  controls.update();
+
 
   renderer.render(scene, camera);
   controls.target.set(160, 164, -179);
