@@ -14,6 +14,7 @@ import { FXAAShader } from "./three/examples/jsm/shaders/FXAAShader.js";
 import { ShaderPass } from "./three/examples/jsm/postprocessing/ShaderPass.js";
 import { FBXLoader } from "./three/examples/jsm/loaders/FBXLoader.js"; // Change this line to import FBXLoader
 import { OrbitControls } from './three/examples/jsm/controls/OrbitControls.js';
+import { DeviceOrientationControls } from './three/examples/jsm/controls/DeviceOrientationControls.js';
 
 
 let scene, camera, renderer, dragon, ground, composer; // <-- Added composer here
@@ -34,6 +35,8 @@ let smaugMixer; // Add this line to declare smaugMixer globally
 let controls;
 
 
+
+
 const purpledragonTexture = new THREE.TextureLoader().load(
   "textures/Dragon_ground_color.jpg"
 );
@@ -47,26 +50,26 @@ function addText() {
   fontLoader.load(
     "./three/examples/fonts/Noto Sans JP_Bold.json",
     function (font) {
-// Increase the size of the text
-const geometryMain = new TextGeometry("JASONGODFREY.DEV", {
-  font: font,
-  size: 99, // Increase the size
-  height: 1,
-});
+      // Increase the size of the text
+      const geometryMain = new TextGeometry("JASONGODFREY.DEV", {
+        font: font,
+        size: 99, // Increase the size
+        height: 1,
+      });
 
-// Use a different color for the material
-const materialMain = new MeshBasicMaterial({ color: 0xffffff }); // White color
+      // Use a different color for the material
+      const materialMain = new MeshBasicMaterial({ color: 0xffffff }); // White color
 
 
 
-// Reduce the camera's near clipping plane
-const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0, 1000);
+      // Reduce the camera's near clipping plane
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0, 1000);
       textMeshMain = new Mesh(geometryMain, materialMain);
       textMeshMain.position.set(-10, 513, 79);
 
       scene.add(textMeshMain);
 
-     // textMeshMain.rotation.y = Math.PI / 0.100195; // Rotate the text 90 degrees to the right
+      // textMeshMain.rotation.y = Math.PI / 0.100195; // Rotate the text 90 degrees to the right
 
       // Subtitle
       const subtitleChars = Array.from("ジェイソン・ゴッドフリー");
@@ -164,13 +167,13 @@ function loadGLTFScene() {
         object.material.depthWrite = true;
       }
     });
-    
+
     // You can set the position, rotation, scale as needed
     model.position.set(0, 0, 0);
     model.rotation.set(0, 0, 0);
     model.scale.set(1, 1, 1);
 
-    
+
 
     // Finally, add it to your existing scene
     scene.add(model);
@@ -300,9 +303,9 @@ function init() {
   //camera.position.set(0, -10, 69); // Adjust the position as needed
   //camera.lookAt(0, -5, 0); // Look at the origin of the scene
   camera.position.set(480, 213, -579); // Moved the camera slightly to the left
-  
- // camera.lookAt(10000, 50013, 80000);
- camera.rotation.x -= Math.PI / 4; // Rotates the camera 30 degrees upwards
+
+  // camera.lookAt(10000, 50013, 80000);
+  camera.rotation.x -= Math.PI / 4; // Rotates the camera 30 degrees upwards
   // Create a render
   renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true }); // Set antialias to false as we will use FXAA later
 
@@ -312,6 +315,15 @@ function init() {
   renderer.shadowMap.enabled = true; // <-- Add this line here
 
   document.body.appendChild(renderer.domElement);
+  if ('ontouchstart' in window) {
+    // Mobile device
+    controls = new DeviceOrientationControls(camera);
+  } else {
+    // Desktop device
+    controls = new OrbitControls(camera, renderer.domElement);
+  }
+
+
   composer = new EffectComposer(renderer);
   const renderPass = new RenderPass(scene, camera);
   composer.addPass(renderPass);
@@ -423,53 +435,53 @@ function init() {
 
     function loadSmaugModelAndAnimations() {
       const smaugLoader = new FBXLoader();
-    
-      smaugLoader.load('smaug/Fbx/smaug_01.FBX', function(object) {
+
+      smaugLoader.load('smaug/Fbx/smaug_01.FBX', function (object) {
         smaug = object;
         smaug.scale.set(10, 10, 10);
         smaug.position.set(240, 130, -280);
         smaug.rotation.y = 272.5;
-    
+
         const smaugTexture = new THREE.TextureLoader().load('smaug/Texture/smaug_01.png');
-        smaug.traverse(function(child) {
+        smaug.traverse(function (child) {
           if (child.isMesh) {
             child.material.map = smaugTexture;
           }
         });
-    
+
         scene.add(smaug);
 
-        
-    // Add the text after the smaug model is loaded
-    const loader = new THREE.FontLoader();
-    loader.load('fonts/helvetiker_regular.typeface.json', function(font) {
-      const geometry = new THREE.TextGeometry('JASONGODFREY.DEV', {
-        font: font,
-        size: 7,
-        height: 1,
-        curveSegments: 12,
-        bevelEnabled: true,
-        bevelThickness: 0.15,
-        bevelSize: 0.3,
-        bevelSegments: 5
-      });
-      const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
-      const textMesh = new THREE.Mesh(geometry, material);
-      textMesh.position.set(smaug.position.x + 40, smaug.position.y + 30, smaug.position.z);
-      // Set the rotation of the text mesh (in radians)
-//textMesh.rotation.x = Math.PI / 2; // Rotate around the x-axis by 90 degrees
-textMesh.rotation.y = 160; // No rotation around the y-axis
-textMesh.rotation.z = 0; // No rotation around the z-axis
 
-      scene.add(textMesh);
-    });
-    
+        // Add the text after the smaug model is loaded
+        const loader = new THREE.FontLoader();
+        loader.load('fonts/helvetiker_regular.typeface.json', function (font) {
+          const geometry = new THREE.TextGeometry('JASONGODFREY.DEV', {
+            font: font,
+            size: 7,
+            height: 1,
+            curveSegments: 12,
+            bevelEnabled: true,
+            bevelThickness: 0.15,
+            bevelSize: 0.3,
+            bevelSegments: 5
+          });
+          const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+          const textMesh = new THREE.Mesh(geometry, material);
+          textMesh.position.set(smaug.position.x + 40, smaug.position.y + 30, smaug.position.z);
+          // Set the rotation of the text mesh (in radians)
+          //textMesh.rotation.x = Math.PI / 2; // Rotate around the x-axis by 90 degrees
+          textMesh.rotation.y = 160; // No rotation around the y-axis
+          textMesh.rotation.z = 0; // No rotation around the z-axis
+
+          scene.add(textMesh);
+        });
+
         smaugMixer = new THREE.AnimationMixer(smaug);
         smaugMixer.timeScale = 0.6; // Set this for half speed. Adjust as needed.
         mixers.push(smaugMixer);
-    
+
         // Load animations
-        loadSmaugAnimation('smaug/Fbx/smaug_idle_01.FBX', 'idle', function() {
+        loadSmaugAnimation('smaug/Fbx/smaug_idle_01.FBX', 'idle', function () {
           playAnimation('idle');
         });
         // ... [other animations] ...
@@ -478,7 +490,7 @@ textMesh.rotation.z = 0; // No rotation around the z-axis
 
     function loadSmaugAnimation(path, name, callback) {
       const loader = new FBXLoader();
-      loader.load(path, function(object) {
+      loader.load(path, function (object) {
         smaugAnimations[name] = object.animations[0];
         if (callback) callback();
       });
@@ -489,7 +501,7 @@ textMesh.rotation.z = 0; // No rotation around the z-axis
         action.play();
       }
     }
-    
+
     loadSmaugModelAndAnimations();
     playAnimation('idle');
 
@@ -555,7 +567,7 @@ textMesh.rotation.z = 0; // No rotation around the z-axis
     whiteSquare.position.set(dragon.position.x, -20, dragon.position.z);
     whiteSquare.rotation.set(-Math.PI / 2, 0, 0); // Rotate 90 degrees to lie flat
 
-   // scene.add(whiteSquare);
+    // scene.add(whiteSquare);
 
     // Add event listener to the button
     document.getElementById('blackSkinButton').addEventListener('click', function () {
@@ -618,7 +630,7 @@ textMesh.rotation.z = 0; // No rotation around the z-axis
 
   //fog
 
-  
+
   controls = new OrbitControls(camera, renderer.domElement);
 
   // You can adjust these settings based on your needs
@@ -627,6 +639,14 @@ textMesh.rotation.z = 0; // No rotation around the z-axis
   controls.enablePan = true; // Enable panning
   controls.enableDamping = true; // Enable damping (inertia), which can create a smooth experience
   controls.dampingFactor = 0.05;
+
+  if ('ontouchstart' in window) {
+    // Mobile device
+    controls = new DeviceOrientationControls(camera);
+  } else {
+    // Desktop device
+    controls = new OrbitControls(camera, renderer.domElement);
+  }
 }
 // Define parameters for cinematic orbit
 const orbitRadius = 60;
@@ -644,6 +664,9 @@ function animate() {
 
   requestAnimationFrame(animate);
   controls.update();
+  
+  if (controls) controls.update();
+
   renderer.render(scene, camera);
   controls.target.set(160, 164, -179);
 
@@ -651,8 +674,8 @@ function animate() {
 
 
 
-   // Update all mixers
-   mixers.forEach((mixer) => {
+  // Update all mixers
+  mixers.forEach((mixer) => {
     mixer.update(delta);
   });
 
