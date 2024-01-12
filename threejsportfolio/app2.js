@@ -14,7 +14,6 @@ import { FXAAShader } from "./three/examples/jsm/shaders/FXAAShader.js";
 import { ShaderPass } from "./three/examples/jsm/postprocessing/ShaderPass.js";
 import { FBXLoader } from "./three/examples/jsm/loaders/FBXLoader.js"; // Change this line to import FBXLoader
 import { OrbitControls } from './three/examples/jsm/controls/OrbitControls.js';
-import { DeviceOrientationControls } from './three/examples/jsm/controls/DeviceOrientationControls.js';
 
 
 let scene, camera, renderer, dragon, ground, composer; // <-- Added composer here
@@ -286,6 +285,8 @@ function init() {
     1800
   );
   renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
+  // Initialize controls
+  controls = new OrbitControls(camera, renderer.domElement);
 
 
   // Create a loading manager instance
@@ -315,13 +316,7 @@ function init() {
   renderer.shadowMap.enabled = true; // <-- Add this line here
 
   document.body.appendChild(renderer.domElement);
-  if ('ontouchstart' in window) {
-    // Mobile device
-    controls = new DeviceOrientationControls(camera);
-  } else {
-    // Desktop device
-    controls = new OrbitControls(camera, renderer.domElement);
-  }
+
 
   composer = new EffectComposer(renderer);
   const renderPass = new RenderPass(scene, camera);
@@ -627,10 +622,10 @@ function init() {
   console.log(scene.background);
   console.log(scene);
 
+  controls = new OrbitControls(camera, renderer.domElement);
+
   //fog
 
-
-  controls = new OrbitControls(camera, renderer.domElement);
 
   // You can adjust these settings based on your needs
   controls.minDistance = 10; // Minimum distance for zooming in
@@ -639,261 +634,255 @@ function init() {
   controls.enableDamping = true; // Enable damping (inertia), which can create a smooth experience
   controls.dampingFactor = 0.05;
 
-  if ('ontouchstart' in window) {
-    // Mobile device
-    controls = new DeviceOrientationControls(camera);
-  } else {
-    // Desktop device
-    controls = new OrbitControls(camera, renderer.domElement);
+
+  // Define parameters for cinematic orbit
+  const orbitRadius = 60;
+  const orbitSpeed = 0.005; // Adjust this value for desired speed
+  //const targetLookAt = new THREE.Vector3(0, -20, 0); // Adjust target position
+
+  let fadeOut = false; // Declare at the top-level of your script
+
+  function fadeOutText() {
+    fadeOut = true;
   }
-}
-// Define parameters for cinematic orbit
-const orbitRadius = 60;
-const orbitSpeed = 0.005; // Adjust this value for desired speed
-//const targetLookAt = new THREE.Vector3(0, -20, 0); // Adjust target position
+  let clock = new THREE.Clock();
 
-let fadeOut = false; // Declare at the top-level of your script
+  function animate() {
 
-function fadeOutText() {
-  fadeOut = true;
-}
-let clock = new THREE.Clock();
+    requestAnimationFrame(animate);
 
-function animate() {
-
-  requestAnimationFrame(animate);
-    
-  if (controls) controls.update();
-  controls.update();
+    if (controls) controls.update();
+    controls.update();
 
 
-  renderer.render(scene, camera);
-  controls.target.set(160, 164, -179);
+    renderer.render(scene, camera);
+    controls.target.set(160, 164, -179);
 
-  const delta = clock.getDelta();
+
+    const delta = clock.getDelta();
 
 
 
-  // Update all mixers
-  mixers.forEach((mixer) => {
-    mixer.update(delta);
-  });
+    // Update all mixers
+    mixers.forEach((mixer) => {
+      mixer.update(delta);
+    });
 
 
-  //updateParticles();
+    //updateParticles();
 
 
 
 
 
-  // Update the picking ray with the camera and mouse position
-  raycaster.setFromCamera(mouse, camera);
+    // Update the picking ray with the camera and mouse position
+    raycaster.setFromCamera(mouse, camera);
 
-  // Create a plane at z=0 that we'll find the intersection on
-  const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
-  const intersection = new THREE.Vector3();
-  raycaster.ray.intersectPlane(plane, intersection);
+    // Create a plane at z=0 that we'll find the intersection on
+    const plane = new THREE.Plane(new THREE.Vector3(0, 0, 1), 0);
+    const intersection = new THREE.Vector3();
+    raycaster.ray.intersectPlane(plane, intersection);
 
 
 
-  // Rotate the dragon to face the intersection point
-  if (dragon) {
-    // Calculate the angle between the dragon and the intersection point
-    const targetAngle =
-      Math.atan2(
-        intersection.y - dragon.position.y,
-        intersection.x - dragon.position.x
-      ) -
-      Math.PI / 2; // Desired angle (facing the mouse)
+    // Rotate the dragon to face the intersection point
+    if (dragon) {
+      // Calculate the angle between the dragon and the intersection point
+      const targetAngle =
+        Math.atan2(
+          intersection.y - dragon.position.y,
+          intersection.x - dragon.position.x
+        ) -
+        Math.PI / 2; // Desired angle (facing the mouse)
 
-    // Smoothly interpolate the dragon's current rotation towards the target angle
-    const alpha = 0.006; // This determines the speed/smoothness of the rotation. Lower value means smoother.
-    dragon.rotation.y = THREE.MathUtils.lerp(
-      dragon.rotation.y,
-      -targetAngle,
-      alpha
-    );
-  }
-
-  // Move the square in a circle around the dragon
-  if (whiteSquare) {
-    whiteSquare.rotation.z -= 0.001; // Adjust the value 0.01 for faster or slower rotation
-  }
-
-  // Update each mixer in the mixers array
-  for (let mixer of mixers) {
-    mixer.update(0.0025); // Assuming a 60fps frame rate. Adjust this value if necessary.
-  }
-
-  if (textMeshMain) {
-    //textMeshMain.lookAt(camera.position);
-    //console.log("Text is facing the camera");
-  }
-
-  // Update the y position of the text meshes
-  for (let i = 0; i < textMeshes.length; i++) {
-    const acceleration = -0.005; // Gravity
-
-    // Update velocity and position based on acceleration
-    velocities[i] += acceleration;
-    textMeshes[i].position.y += velocities[i];
-
-    // Reset position and velocity when the text goes too low
-    if (textMeshes[i].position.y < -20) {
-      textMeshes[i].position.y = 20;
-      velocities[i] = 0;
+      // Smoothly interpolate the dragon's current rotation towards the target angle
+      const alpha = 0.006; // This determines the speed/smoothness of the rotation. Lower value means smoother.
+      dragon.rotation.y = THREE.MathUtils.lerp(
+        dragon.rotation.y,
+        -targetAngle,
+        alpha
+      );
     }
-  }
-  if (fadeOut) {
-    let allFaded = true;
 
-    for (let i = 0; i < allTextMeshes.length; i++) {
-      if (allTextMeshes[i].material.opacity > 0) {
-        allTextMeshes[i].material.opacity -= 0.01; // Change speed as needed
-        allFaded = false;
+    // Move the square in a circle around the dragon
+    if (whiteSquare) {
+      whiteSquare.rotation.z -= 0.001; // Adjust the value 0.01 for faster or slower rotation
+    }
+
+    // Update each mixer in the mixers array
+    for (let mixer of mixers) {
+      mixer.update(0.0025); // Assuming a 60fps frame rate. Adjust this value if necessary.
+    }
+
+    if (textMeshMain) {
+      //textMeshMain.lookAt(camera.position);
+      //console.log("Text is facing the camera");
+    }
+
+    // Update the y position of the text meshes
+    for (let i = 0; i < textMeshes.length; i++) {
+      const acceleration = -0.005; // Gravity
+
+      // Update velocity and position based on acceleration
+      velocities[i] += acceleration;
+      textMeshes[i].position.y += velocities[i];
+
+      // Reset position and velocity when the text goes too low
+      if (textMeshes[i].position.y < -20) {
+        textMeshes[i].position.y = 20;
+        velocities[i] = 0;
+      }
+    }
+    if (fadeOut) {
+      let allFaded = true;
+
+      for (let i = 0; i < allTextMeshes.length; i++) {
+        if (allTextMeshes[i].material.opacity > 0) {
+          allTextMeshes[i].material.opacity -= 0.01; // Change speed as needed
+          allFaded = false;
+        }
+      }
+
+      if (allFaded) {
+        fadeOut = false; // Reset the flag
       }
     }
 
-    if (allFaded) {
-      fadeOut = false; // Reset the flag
+    composer.render();
+  }
+
+  animate(); // Call this after the init function
+
+  // Other Three.js related code...
+
+  document.addEventListener("mousedown", onDocumentMouseDown, false);
+  function onDocumentMouseDown(event) {
+    console.log("Mouse down event triggered"); // Debug statement
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+    raycaster.setFromCamera(mouse, camera);
+    const intersects = raycaster.intersectObjects(allTextMeshes, true);
+    console.log("Intersected objects: ", intersects); // Debug statement
+
+    for (let i = 0; i < intersects.length; i++) {
+      const intersection = intersects[i];
+      const obj = intersection.object;
+      console.log("Intersecting with: ", obj); // Debug statement
+
+      if (obj.userData.isButton) {
+        console.log("Button clicked"); // Debug statement
+        fadeOutText();
+        break;
+      }
     }
   }
 
-  composer.render();
-}
+  // Add event listeners to the buttons
+  document.querySelectorAll(".custom-btn").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      // Here, "event.target" refers to the button that was clicked.
+      // Depending on which button it was, you can decide what action to take.
+      const contactInfoDiv = document.getElementById("contact-info");
+      const gameInfoDiv = document.getElementById("GameDev-info");
+      const WebInfoDiv = document.getElementById("WebDev-info");
+      const AboutInfoDiv = document.getElementById("About-info");
 
-animate(); // Call this after the init function
+      switch (event.target.innerText) {
+        case "About":
+          if (dragon) {
+            dragon.traverse((child) => {
+              if (child.isMesh) {
+                child.material.wireframe = false; // Turn off wireframe
+              }
+            });
+          }
 
-// Other Three.js related code...
+          contactInfoDiv.style.display = "none"; // Show the contact information
+          gameInfoDiv.style.display = "none"; // Show the contact information
+          WebInfoDiv.style.display = "none"; // Show the contact information
+          AboutInfoDiv.style.display = "block"; // Show the contact information
 
-document.addEventListener("mousedown", onDocumentMouseDown, false);
-function onDocumentMouseDown(event) {
-  console.log("Mouse down event triggered"); // Debug statement
-  mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-  mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+          break;
 
-  raycaster.setFromCamera(mouse, camera);
-  const intersects = raycaster.intersectObjects(allTextMeshes, true);
-  console.log("Intersected objects: ", intersects); // Debug statement
+        case "Games":
+          // Handle "GameDev" button click
+          contactInfoDiv.style.display = "none"; // Show the contact information
+          gameInfoDiv.style.display = "block"; // Show the contact information
+          WebInfoDiv.style.display = "none"; // Show the contact information
+          AboutInfoDiv.style.display = "none"; // Show the contact information
 
-  for (let i = 0; i < intersects.length; i++) {
-    const intersection = intersects[i];
-    const obj = intersection.object;
-    console.log("Intersecting with: ", obj); // Debug statement
-
-    if (obj.userData.isButton) {
-      console.log("Button clicked"); // Debug statement
-      fadeOutText();
-      break;
-    }
-  }
-}
-
-// Add event listeners to the buttons
-document.querySelectorAll(".custom-btn").forEach((button) => {
-  button.addEventListener("click", (event) => {
-    // Here, "event.target" refers to the button that was clicked.
-    // Depending on which button it was, you can decide what action to take.
-    const contactInfoDiv = document.getElementById("contact-info");
-    const gameInfoDiv = document.getElementById("GameDev-info");
-    const WebInfoDiv = document.getElementById("WebDev-info");
-    const AboutInfoDiv = document.getElementById("About-info");
-
-    switch (event.target.innerText) {
-      case "About":
-        if (dragon) {
+          break;
+        case "Web":
+          // Handle "WebDev" button click
+          contactInfoDiv.style.display = "none"; // Show the contact information
+          gameInfoDiv.style.display = "none"; // Show the contact information
+          WebInfoDiv.style.display = "block"; // Show the contact information
+          AboutInfoDiv.style.display = "none"; // Show the contact information
           dragon.traverse((child) => {
             if (child.isMesh) {
-              child.material.wireframe = false; // Turn off wireframe
+              child.material.map = purpledragonTexture; // Apply the texture
+              child.material.needsUpdate = true; // Necessary after changing a material's properties
             }
           });
-        }
+          break;
+        case "Contact":
+          gameInfoDiv.style.display = "none"; // Show the contact information
+          contactInfoDiv.style.display = "block"; // Show the contact information
+          WebInfoDiv.style.display = "none"; // Show the contact information
+          AboutInfoDiv.style.display = "none"; // Show the contact information
 
-        contactInfoDiv.style.display = "none"; // Show the contact information
-        gameInfoDiv.style.display = "none"; // Show the contact information
-        WebInfoDiv.style.display = "none"; // Show the contact information
-        AboutInfoDiv.style.display = "block"; // Show the contact information
+          break;
+        default:
+          break;
+      }
+    });
+  });
 
-        break;
+  const inputElement = document.getElementById("commandInput");
+  const contentElement = document.querySelector(".console-content");
 
-      case "Games":
-        // Handle "GameDev" button click
-        contactInfoDiv.style.display = "none"; // Show the contact information
-        gameInfoDiv.style.display = "block"; // Show the contact information
-        WebInfoDiv.style.display = "none"; // Show the contact information
-        AboutInfoDiv.style.display = "none"; // Show the contact information
+  document.querySelectorAll(".command-link").forEach((link) => {
+    link.addEventListener("click", function (event) {
 
-        break;
-      case "Web":
-        // Handle "WebDev" button click
-        contactInfoDiv.style.display = "none"; // Show the contact information
-        gameInfoDiv.style.display = "none"; // Show the contact information
-        WebInfoDiv.style.display = "block"; // Show the contact information
-        AboutInfoDiv.style.display = "none"; // Show the contact information
-        dragon.traverse((child) => {
-          if (child.isMesh) {
-            child.material.map = purpledragonTexture; // Apply the texture
-            child.material.needsUpdate = true; // Necessary after changing a material's properties
-          }
-        });
-        break;
-      case "Contact":
-        gameInfoDiv.style.display = "none"; // Show the contact information
-        contactInfoDiv.style.display = "block"; // Show the contact information
-        WebInfoDiv.style.display = "none"; // Show the contact information
-        AboutInfoDiv.style.display = "none"; // Show the contact information
 
-        break;
-      default:
-        break;
+      const command = this.textContent.trim();
+      executeCommand(command);
+    });
+  });
+
+  inputElement.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      const inputText = inputElement.value.trim();
+      executeCommand(inputText);
+      event.preventDefault();
     }
   });
-});
 
-const inputElement = document.getElementById("commandInput");
-const contentElement = document.querySelector(".console-content");
+  function executeCommand(command) {
+    if (command !== "") {
+      const outputLine = document.createElement("p");
+      outputLine.className = "console-line";
 
-document.querySelectorAll(".command-link").forEach((link) => {
-  link.addEventListener("click", function (event) {
+      const promptSpan = document.createElement("span");
+      promptSpan.textContent = "> ";
+      outputLine.appendChild(promptSpan);
 
+      const commandSpan = document.createElement("span");
+      commandSpan.textContent = command;
+      outputLine.appendChild(commandSpan);
 
-    const command = this.textContent.trim();
-    executeCommand(command);
-  });
-});
+      contentElement.appendChild(outputLine);
 
-inputElement.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") {
-    const inputText = inputElement.value.trim();
-    executeCommand(inputText);
-    event.preventDefault();
+      // Scroll the console content to the bottom
+      contentElement.scrollTop = contentElement.scrollHeight;
+
+      inputElement.value = "";
+    }
   }
-});
 
-function executeCommand(command) {
-  if (command !== "") {
-    const outputLine = document.createElement("p");
-    outputLine.className = "console-line";
-
-    const promptSpan = document.createElement("span");
-    promptSpan.textContent = "> ";
-    outputLine.appendChild(promptSpan);
-
-    const commandSpan = document.createElement("span");
-    commandSpan.textContent = command;
-    outputLine.appendChild(commandSpan);
-
-    contentElement.appendChild(outputLine);
-
-    // Scroll the console content to the bottom
-    contentElement.scrollTop = contentElement.scrollHeight;
-
-    inputElement.value = "";
-  }
-}
-
-document.querySelector(".dir-btn").addEventListener("click", function () {
-  const directoryContent = `
+  document.querySelector(".dir-btn").addEventListener("click", function () {
+    const directoryContent = `
       <p class="console-line">//Directory:</p>
       <p class="console-line"><a href="#" class="command-link">*ABOUT ｜ について</a></p>
       <p class="console-line"><a href="#" class="command-link">*WEB ｜ ウェブ</a></p>
@@ -901,90 +890,90 @@ document.querySelector(".dir-btn").addEventListener("click", function () {
       
   `;
 
-  contentElement.innerHTML += directoryContent;
-  contentElement.scrollTop = contentElement.scrollHeight;
+    contentElement.innerHTML += directoryContent;
+    contentElement.scrollTop = contentElement.scrollHeight;
 
-  // Re-bind the click event to new command-links
-  document.querySelectorAll(".command-link").forEach((link) => {
-    link.addEventListener("click", function (event) {
-      event.preventDefault();
-      const command = this.textContent.trim();
-      executeCommand(command);
+    // Re-bind the click event to new command-links
+    document.querySelectorAll(".command-link").forEach((link) => {
+      link.addEventListener("click", function (event) {
+        event.preventDefault();
+        const command = this.textContent.trim();
+        executeCommand(command);
+      });
     });
   });
-});
 
-const consoleElement = document.querySelector(".console");
-const resizeHandle = document.querySelector(".console-resize-handle");
+  const consoleElement = document.querySelector(".console");
+  const resizeHandle = document.querySelector(".console-resize-handle");
 
-let isResizing = false;
+  let isResizing = false;
 
-let initialWidth, initialHeight, initialMouseX, initialMouseY;
+  let initialWidth, initialHeight, initialMouseX, initialMouseY;
 
-resizeHandle.addEventListener("mousedown", (event) => {
-  isResizing = true;
-  initialWidth = consoleElement.offsetWidth;
-  initialHeight = consoleElement.offsetHeight;
-  initialMouseX = event.clientX;
-  initialMouseY = event.clientY;
+  resizeHandle.addEventListener("mousedown", (event) => {
+    isResizing = true;
+    initialWidth = consoleElement.offsetWidth;
+    initialHeight = consoleElement.offsetHeight;
+    initialMouseX = event.clientX;
+    initialMouseY = event.clientY;
 
-  document.addEventListener("mousemove", handleMouseMove);
-  document.addEventListener("mouseup", () => {
-    isResizing = false;
-    document.removeEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", () => {
+      isResizing = false;
+      document.removeEventListener("mousemove", handleMouseMove);
+    });
   });
-});
 
-const INITIAL_WIDTH = consoleElement.offsetWidth;
-const INITIAL_HEIGHT = consoleElement.offsetHeight;
+  const INITIAL_WIDTH = consoleElement.offsetWidth;
+  const INITIAL_HEIGHT = consoleElement.offsetHeight;
 
-function handleMouseMove(event) {
-  if (!isResizing) return;
+  function handleMouseMove(event) {
+    if (!isResizing) return;
 
-  const dx = event.clientX - initialMouseX;
-  const dy = event.clientY - initialMouseY;
+    const dx = event.clientX - initialMouseX;
+    const dy = event.clientY - initialMouseY;
 
-  const newWidth = Math.max(initialWidth + dx, INITIAL_WIDTH);
-  const newHeight = Math.max(initialHeight + dy, INITIAL_HEIGHT);
+    const newWidth = Math.max(initialWidth + dx, INITIAL_WIDTH);
+    const newHeight = Math.max(initialHeight + dy, INITIAL_HEIGHT);
 
-  consoleElement.style.width = `${newWidth}px`;
-  consoleElement.style.height = `${newHeight}px`;
-}
+    consoleElement.style.width = `${newWidth}px`;
+    consoleElement.style.height = `${newHeight}px`;
+  }
 
-const dragBar = document.querySelector(".console-drag-bar");
+  const dragBar = document.querySelector(".console-drag-bar");
 
-let isDragging = false;
-let prevX, prevY;
+  let isDragging = false;
+  let prevX, prevY;
 
-dragBar.addEventListener("mousedown", (event) => {
-  isDragging = true;
-  prevX = event.clientX;
-  prevY = event.clientY;
+  dragBar.addEventListener("mousedown", (event) => {
+    isDragging = true;
+    prevX = event.clientX;
+    prevY = event.clientY;
 
-  document.addEventListener("mousemove", handleDragMove);
-  document.addEventListener("mouseup", () => {
-    isDragging = false;
-    document.removeEventListener("mousemove", handleDragMove);
+    document.addEventListener("mousemove", handleDragMove);
+    document.addEventListener("mouseup", () => {
+      isDragging = false;
+      document.removeEventListener("mousemove", handleDragMove);
+    });
   });
-});
 
-function handleDragMove(event) {
-  if (!isDragging) return;
+  function handleDragMove(event) {
+    if (!isDragging) return;
 
-  const dx = event.clientX - prevX;
-  const dy = event.clientY - prevY;
+    const dx = event.clientX - prevX;
+    const dy = event.clientY - prevY;
 
-  const currentLeft = parseInt(
-    window.getComputedStyle(consoleElement).left,
-    10
-  );
-  const currentTop = parseInt(window.getComputedStyle(consoleElement).top, 10);
+    const currentLeft = parseInt(
+      window.getComputedStyle(consoleElement).left,
+      10
+    );
+    const currentTop = parseInt(window.getComputedStyle(consoleElement).top, 10);
 
-  consoleElement.style.left = `${currentLeft + dx}px`;
-  consoleElement.style.top = `${currentTop + dy}px`;
+    consoleElement.style.left = `${currentLeft + dx}px`;
+    consoleElement.style.top = `${currentTop + dy}px`;
 
-  prevX = event.clientX;
-  prevY = event.clientY;
+    prevX = event.clientX;
+    prevY = event.clientY;
+  }
+
 }
-
-
